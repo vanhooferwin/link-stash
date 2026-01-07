@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark, Zap } from "lucide-react";
+import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -157,27 +157,6 @@ export function AppSidebar({
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarGroup>
-            <SidebarGroupLabel>Quick Stats</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <div className="px-3 py-2 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Bookmark className="h-4 w-4" />
-                    <span>Bookmarks</span>
-                  </div>
-                  <span className="font-medium" data-testid="text-bookmark-count">-</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Zap className="h-4 w-4" />
-                    <span>API Calls</span>
-                  </div>
-                  <span className="font-medium" data-testid="text-api-call-count">-</span>
-                </div>
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup>
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-sidebar-border">
