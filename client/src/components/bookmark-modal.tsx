@@ -51,6 +51,7 @@ const formSchema = z.object({
     expectedStatus: z.number().default(200),
     jsonKey: z.string().optional(),
     jsonValue: z.string().optional(),
+    checkSsl: z.boolean().default(false),
   }).optional(),
   order: z.number().default(0),
 });
@@ -89,6 +90,7 @@ export function BookmarkModal({
         expectedStatus: 200,
         jsonKey: "",
         jsonValue: "",
+        checkSsl: false,
       },
       order: 0,
     },
@@ -111,6 +113,7 @@ export function BookmarkModal({
           expectedStatus: bookmark.healthCheckConfig?.expectedStatus || 200,
           jsonKey: bookmark.healthCheckConfig?.jsonKey || "",
           jsonValue: bookmark.healthCheckConfig?.jsonValue || "",
+          checkSsl: bookmark.healthCheckConfig?.checkSsl || false,
         },
         order: bookmark.order,
       });
@@ -128,6 +131,7 @@ export function BookmarkModal({
           expectedStatus: 200,
           jsonKey: "",
           jsonValue: "",
+          checkSsl: false,
         },
         order: 0,
       });
@@ -140,6 +144,7 @@ export function BookmarkModal({
       expectedStatus: data.healthCheckConfig?.expectedStatus || 200,
       jsonKey: data.healthCheckConfig?.jsonKey || undefined,
       jsonValue: data.healthCheckConfig?.jsonValue || undefined,
+      checkSsl: data.healthCheckConfig?.checkSsl || false,
     } : undefined;
     
     onSubmit({
@@ -381,6 +386,28 @@ export function BookmarkModal({
                   <p className="text-xs text-muted-foreground">
                     Check if the response contains a specific JSON key/value pair
                   </p>
+
+                  <FormField
+                    control={form.control}
+                    name="healthCheckConfig.checkSsl"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center gap-2 pt-2">
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            data-testid="switch-check-ssl"
+                          />
+                        </FormControl>
+                        <div className="space-y-0.5">
+                          <FormLabel className="!mt-0">Check SSL Certificate</FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Verify the SSL certificate is valid and not expired
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </CollapsibleContent>
               </Collapsible>
             )}

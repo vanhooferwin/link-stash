@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IconPicker } from "./icon-picker";
+import { ColorPicker } from "./color-picker";
 import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ApiCall, Category, HttpMethod } from "@shared/schema";
@@ -48,6 +49,7 @@ const formSchema = z.object({
   body: z.string().optional(),
   categoryId: z.string().min(1, "Category is required"),
   icon: z.string().default("Zap"),
+  color: z.string().default("default"),
   order: z.number().default(0),
   responseValidationEnabled: z.boolean().default(false),
   responseValidationConfig: z.object({
@@ -90,6 +92,7 @@ export function ApiCallModal({
       body: "",
       categoryId: categories[0]?.id || "",
       icon: "Zap",
+      color: "default",
       order: 0,
       responseValidationEnabled: false,
       responseValidationConfig: {
@@ -121,6 +124,7 @@ export function ApiCallModal({
         body: apiCall.body || "",
         categoryId: apiCall.categoryId,
         icon: apiCall.icon,
+        color: apiCall.color || "default",
         order: apiCall.order,
         responseValidationEnabled: apiCall.responseValidationEnabled || false,
         responseValidationConfig: {
@@ -141,6 +145,7 @@ export function ApiCallModal({
         body: "",
         categoryId: categories[0]?.id || "",
         icon: "Zap",
+        color: "default",
         order: 0,
         responseValidationEnabled: false,
         responseValidationConfig: {
@@ -383,6 +388,20 @@ export function ApiCallModal({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Card Style</FormLabel>
+                  <FormControl>
+                    <ColorPicker value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
