@@ -529,11 +529,13 @@ export default function Dashboard() {
                   const categoryApiCalls = getApiCallsByCategory(category.id);
                   const isCollapsed = collapsedCategories.has(category.id);
                   const totalItems = categoryBookmarks.length + categoryApiCalls.length;
+                  // Auto-expand categories when searching
+                  const isOpen = searchQuery ? true : !isCollapsed;
 
                   return (
                     <Collapsible
                       key={category.id}
-                      open={!isCollapsed}
+                      open={isOpen}
                       onOpenChange={() => toggleCategory(category.id)}
                     >
                       <CollapsibleTrigger asChild>
