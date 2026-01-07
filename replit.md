@@ -130,6 +130,28 @@ The app runs with `npm run dev` which starts both the Express server and Vite de
 4. Create React components in `client/src/components/`
 5. Wire up with TanStack Query mutations/queries in pages
 
+## Deployment
+
+### Docker Compose Deployment
+The application can be deployed using Docker Compose. See `DEPLOY.md` for full instructions.
+
+Quick start:
+```bash
+# Create .env file with SESSION_SECRET
+cp .env.example .env
+# Edit .env and set a secure SESSION_SECRET
+
+# Build and run
+docker compose build
+docker compose up -d
+```
+
+### Files
+- `Dockerfile` - Multi-stage production build
+- `docker-compose.yml` - Container orchestration
+- `DEPLOY.md` - Comprehensive deployment guide
+- `.env.example` - Environment variable template
+
 ## Recent Changes
 
 - Initial implementation of bookmark dashboard MVP
@@ -138,3 +160,8 @@ The app runs with `npm run dev` which starts both the Express server and Vite de
 - API call execution with response modal
 - Dark/light mode support
 - Search and filtering functionality
+- Command palette (Ctrl/Cmd+K) for quick search
+- Glass effect UI with customizable background images
+- Import/export functionality
+- Edit mode toggle (view-only by default)
+- Docker Compose deployment configuration
