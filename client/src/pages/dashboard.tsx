@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image } from "lucide-react";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,6 +43,7 @@ export default function Dashboard() {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
   const [showBgInput, setShowBgInput] = useState(false);
   const [bgInputValue, setBgInputValue] = useState("");
+  const [isRefreshingHealth, setIsRefreshingHealth] = useState(false);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -77,6 +78,37 @@ export default function Dashboard() {
   };
 
   const backgroundImageUrl = settings?.backgroundImageUrl;
+
+  // Function to refresh all health checks
+  const refreshAllHealthChecks = async () => {
+    const bookmarksWithHealth = bookmarks.filter(b => b.healthCheckEnabled);
+    if (bookmarksWithHealth.length === 0) return;
+    
+    setIsRefreshingHealth(true);
+    
+    for (const bookmark of bookmarksWithHealth) {
+      setAnimatingHealthId(bookmark.id);
+      try {
+        await apiRequest("POST", `/api/bookmarks/${bookmark.id}/health`);
+      } catch {
+        // Silently fail individual checks
+      }
+    }
+    
+    queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+    setAnimatingHealthId(null);
+    setIsRefreshingHealth(false);
+  };
+
+  // Run health checks on initial load
+  useEffect(() => {
+    if (bookmarks.length > 0 && !bookmarksLoading) {
+      const hasUnknownHealth = bookmarks.some(b => b.healthCheckEnabled && b.healthStatus === "unknown");
+      if (hasUnknownHealth) {
+        refreshAllHealthChecks();
+      }
+    }
+  }, [bookmarksLoading]);
 
   const createCategoryMutation = useMutation({
     mutationFn: (data: { name: string; order: number }) =>
@@ -403,6 +435,15 @@ export default function Dashboard() {
                   <Image className="h-4 w-4" />
                 </Button>
               )}
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={refreshAllHealthChecks}
+                disabled={isRefreshingHealth}
+                data-testid="button-refresh-health"
+              >
+                <RefreshCw className={cn("h-4 w-4", isRefreshingHealth && "animate-spin")} />
+              </Button>
               <Button
                 variant={editMode ? "default" : "outline"}
                 size="icon"
