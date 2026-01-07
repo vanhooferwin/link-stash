@@ -523,7 +523,7 @@ export default function Dashboard() {
                 )}
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {categoriesWithItems.map((category) => {
                   const categoryBookmarks = getBookmarksByCategory(category.id);
                   const categoryApiCalls = getApiCallsByCategory(category.id);
