@@ -62,7 +62,7 @@ export function BookmarkCard({
       <Card
         className={cn(
           "group relative p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover-elevate active-elevate-2",
-          hasBackgroundImage && !colorClasses.bg ? "bg-card/70 backdrop-blur-xl" : colorClasses.bg,
+          hasBackgroundImage && !colorClasses.bg ? "glass-card" : colorClasses.bg,
           colorClasses.border && `border ${colorClasses.border}`
         )}
         data-testid={`bookmark-card-${bookmark.id}`}

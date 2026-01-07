@@ -57,7 +57,7 @@ export function ApiCallCard({
     <Card
       className={cn(
         "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate",
-        hasBackgroundImage && !colorClasses.bg ? "bg-card/70 backdrop-blur-xl" : colorClasses.bg,
+        hasBackgroundImage && !colorClasses.bg ? "glass-card" : colorClasses.bg,
         colorClasses.border && `border ${colorClasses.border}`
       )}
       data-testid={`api-call-card-${apiCall.id}`}
