@@ -123,36 +123,208 @@ function DraggableApiCallCard({
   );
 }
 
-interface GridCellProps {
-  row: number;
-  col: number;
-  onDrop: (row: number, col: number) => void;
-  isOver: boolean;
-  onDragEnter: (row: number, col: number) => void;
-  onDragLeave: () => void;
+interface BookmarkGridProps {
+  bookmarks: BookmarkType[];
+  columns: number;
+  categoryId: string;
   editMode: boolean;
+  onEdit: (bookmark: BookmarkType) => void;
+  onDelete: (id: string) => void;
+  onDragStart: (e: React.DragEvent, bookmark: BookmarkType) => void;
+  onDragEnter: (categoryId: string, row: number, col: number) => void;
+  onDragLeave: () => void;
+  onDrop: (categoryId: string, row: number, col: number) => void;
+  dropTarget: { row: number; col: number; categoryId: string } | null;
+  animatingHealthId: string | null;
+  hasBackgroundImage: boolean;
 }
 
-function GridCell({ row, col, onDrop, isOver, onDragEnter, onDragLeave, editMode }: GridCellProps) {
-  if (!editMode) return null;
+function BookmarkGrid({
+  bookmarks,
+  columns,
+  categoryId,
+  editMode,
+  onEdit,
+  onDelete,
+  onDragStart,
+  onDragEnter,
+  onDragLeave,
+  onDrop,
+  dropTarget,
+  animatingHealthId,
+  hasBackgroundImage,
+}: BookmarkGridProps) {
+  const maxRow = Math.max(0, ...bookmarks.map(b => b.gridRow ?? 0));
+  const rows = editMode ? maxRow + 2 : maxRow + 1;
   
+  const getBookmarkAt = (row: number, col: number) => {
+    return bookmarks.find(b => (b.gridRow ?? 0) === row && (b.gridColumn ?? 0) === col);
+  };
+
+  const isDropTarget = (row: number, col: number) => {
+    return dropTarget?.categoryId === categoryId && dropTarget.row === row && dropTarget.col === col;
+  };
+
   return (
-    <div
-      className={cn(
-        "border-2 border-dashed rounded-md transition-colors min-h-[80px]",
-        isOver ? "border-primary bg-primary/10" : "border-muted-foreground/20"
+    <div 
+      className="grid gap-4"
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
+      {Array.from({ length: rows }).flatMap((_, row) =>
+        Array.from({ length: columns }).map((_, col) => {
+          const bookmark = getBookmarkAt(row, col);
+          
+          if (bookmark) {
+            return (
+              <div
+                key={bookmark.id}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  onDrop(categoryId, row, col);
+                }}
+              >
+                <DraggableBookmarkCard
+                  bookmark={bookmark}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  editMode={editMode}
+                  isHealthAnimating={animatingHealthId === bookmark.id}
+                  hasBackgroundImage={hasBackgroundImage}
+                  onDragStart={onDragStart}
+                />
+              </div>
+            );
+          }
+          
+          if (!editMode) return null;
+          
+          return (
+            <div
+              key={`empty-${row}-${col}`}
+              className={cn(
+                "border-2 border-dashed rounded-md transition-colors min-h-[80px]",
+                isDropTarget(row, col) ? "border-primary bg-primary/10" : "border-muted-foreground/20"
+              )}
+              onDragOver={(e) => {
+                e.preventDefault();
+                onDragEnter(categoryId, row, col);
+              }}
+              onDragLeave={onDragLeave}
+              onDrop={(e) => {
+                e.preventDefault();
+                onDrop(categoryId, row, col);
+              }}
+              data-testid={`grid-cell-bookmark-${row}-${col}`}
+            />
+          );
+        })
       )}
-      onDragOver={(e) => {
-        e.preventDefault();
-        onDragEnter(row, col);
-      }}
-      onDragLeave={onDragLeave}
-      onDrop={(e) => {
-        e.preventDefault();
-        onDrop(row, col);
-      }}
-      data-testid={`grid-cell-${row}-${col}`}
-    />
+    </div>
+  );
+}
+
+interface ApiCallGridProps {
+  apiCalls: ApiCall[];
+  columns: number;
+  categoryId: string;
+  editMode: boolean;
+  onEdit: (apiCall: ApiCall) => void;
+  onDelete: (id: string) => void;
+  onExecute: (apiCall: ApiCall) => void;
+  onDragStart: (e: React.DragEvent, apiCall: ApiCall) => void;
+  onDragEnter: (categoryId: string, row: number, col: number) => void;
+  onDragLeave: () => void;
+  onDrop: (categoryId: string, row: number, col: number) => void;
+  dropTarget: { row: number; col: number; categoryId: string } | null;
+  executingApiCallId: string | null;
+  hasBackgroundImage: boolean;
+}
+
+function ApiCallGrid({
+  apiCalls,
+  columns,
+  categoryId,
+  editMode,
+  onEdit,
+  onDelete,
+  onExecute,
+  onDragStart,
+  onDragEnter,
+  onDragLeave,
+  onDrop,
+  dropTarget,
+  executingApiCallId,
+  hasBackgroundImage,
+}: ApiCallGridProps) {
+  const maxRow = Math.max(0, ...apiCalls.map(a => a.gridRow ?? 0));
+  const rows = editMode ? maxRow + 2 : maxRow + 1;
+  
+  const getApiCallAt = (row: number, col: number) => {
+    return apiCalls.find(a => (a.gridRow ?? 0) === row && (a.gridColumn ?? 0) === col);
+  };
+
+  const isDropTarget = (row: number, col: number) => {
+    return dropTarget?.categoryId === categoryId && dropTarget.row === row && dropTarget.col === col;
+  };
+
+  return (
+    <div 
+      className="grid gap-4"
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
+      {Array.from({ length: rows }).flatMap((_, row) =>
+        Array.from({ length: columns }).map((_, col) => {
+          const apiCall = getApiCallAt(row, col);
+          
+          if (apiCall) {
+            return (
+              <div
+                key={apiCall.id}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  onDrop(categoryId, row, col);
+                }}
+              >
+                <DraggableApiCallCard
+                  apiCall={apiCall}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onExecute={onExecute}
+                  editMode={editMode}
+                  isExecuting={executingApiCallId === apiCall.id}
+                  hasBackgroundImage={hasBackgroundImage}
+                  onDragStart={onDragStart}
+                />
+              </div>
+            );
+          }
+          
+          if (!editMode) return null;
+          
+          return (
+            <div
+              key={`empty-${row}-${col}`}
+              className={cn(
+                "border-2 border-dashed rounded-md transition-colors min-h-[80px]",
+                isDropTarget(row, col) ? "border-primary bg-primary/10" : "border-muted-foreground/20"
+              )}
+              onDragOver={(e) => {
+                e.preventDefault();
+                onDragEnter(categoryId, row, col);
+              }}
+              onDragLeave={onDragLeave}
+              onDrop={(e) => {
+                e.preventDefault();
+                onDrop(categoryId, row, col);
+              }}
+              data-testid={`grid-cell-api-${row}-${col}`}
+            />
+          );
+        })
+      )}
+    </div>
   );
 }
 
@@ -654,7 +826,27 @@ export default function Dashboard() {
     if (editingBookmark) {
       updateBookmarkMutation.mutate({ id: editingBookmark.id, data });
     } else {
-      createBookmarkMutation.mutate(data);
+      const categoryBookmarks = bookmarks.filter(b => b.categoryId === data.categoryId);
+      const nextPosition = findNextGridPosition(categoryBookmarks, data.categoryId);
+      createBookmarkMutation.mutate({
+        ...data,
+        gridRow: nextPosition.row,
+        gridColumn: nextPosition.col,
+      });
+    }
+  };
+
+  const findNextGridPosition = (items: { gridRow?: number; gridColumn?: number }[], categoryId: string) => {
+    const category = categories.find(c => c.id === categoryId);
+    const columns = category?.columns ?? 4;
+    const occupied = new Set(items.map(item => `${item.gridRow ?? 0}-${item.gridColumn ?? 0}`));
+    
+    for (let row = 0; ; row++) {
+      for (let col = 0; col < columns; col++) {
+        if (!occupied.has(`${row}-${col}`)) {
+          return { row, col };
+        }
+      }
     }
   };
 
@@ -672,7 +864,13 @@ export default function Dashboard() {
     if (editingApiCall) {
       updateApiCallMutation.mutate({ id: editingApiCall.id, data });
     } else {
-      createApiCallMutation.mutate(data);
+      const categoryApiCalls = apiCalls.filter(a => a.categoryId === data.categoryId);
+      const nextPosition = findNextGridPosition(categoryApiCalls, data.categoryId);
+      createApiCallMutation.mutate({
+        ...data,
+        gridRow: nextPosition.row,
+        gridColumn: nextPosition.col,
+      });
     }
   };
 
@@ -921,69 +1119,41 @@ export default function Dashboard() {
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="px-2 pt-4">
-                        <div className="space-y-4">
+                        <div className="space-y-4" onDragEnd={handleDragEnd}>
                           {categoryBookmarks.length > 0 && (
-                            <DndContext
-                              sensors={sensors}
-                              collisionDetection={closestCenter}
-                              onDragEnd={handleBookmarkDragEnd(category.id)}
-                            >
-                              <SortableContext
-                                items={categoryBookmarks.map((b) => b.id)}
-                                strategy={rectSortingStrategy}
-                              >
-                                <div 
-                                  className="grid gap-4"
-                                  style={{ 
-                                    gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
-                                  }}
-                                >
-                                  {categoryBookmarks.map((bookmark) => (
-                                    <SortableBookmarkCard
-                                      key={bookmark.id}
-                                      bookmark={bookmark}
-                                      onEdit={handleEditBookmark}
-                                      onDelete={(id) => deleteBookmarkMutation.mutate(id)}
-                                      editMode={editMode}
-                                      isHealthAnimating={animatingHealthId === bookmark.id}
-                                      hasBackgroundImage={!!backgroundImageUrl}
-                                    />
-                                  ))}
-                                </div>
-                              </SortableContext>
-                            </DndContext>
+                            <BookmarkGrid
+                              bookmarks={categoryBookmarks}
+                              columns={category.columns ?? 4}
+                              categoryId={category.id}
+                              editMode={editMode}
+                              onEdit={handleEditBookmark}
+                              onDelete={(id) => deleteBookmarkMutation.mutate(id)}
+                              onDragStart={handleBookmarkDragStart}
+                              onDragEnter={handleDragEnter}
+                              onDragLeave={handleDragLeave}
+                              onDrop={handleDrop}
+                              dropTarget={dropTarget}
+                              animatingHealthId={animatingHealthId}
+                              hasBackgroundImage={!!backgroundImageUrl}
+                            />
                           )}
                           {categoryApiCalls.length > 0 && (
-                            <DndContext
-                              sensors={sensors}
-                              collisionDetection={closestCenter}
-                              onDragEnd={handleApiCallDragEnd(category.id)}
-                            >
-                              <SortableContext
-                                items={categoryApiCalls.map((a) => a.id)}
-                                strategy={rectSortingStrategy}
-                              >
-                                <div 
-                                  className="grid gap-4"
-                                  style={{ 
-                                    gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
-                                  }}
-                                >
-                                  {categoryApiCalls.map((apiCall) => (
-                                    <SortableApiCallCard
-                                      key={apiCall.id}
-                                      apiCall={apiCall}
-                                      onEdit={handleEditApiCall}
-                                      onDelete={(id) => deleteApiCallMutation.mutate(id)}
-                                      onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
-                                      editMode={editMode}
-                                      isExecuting={executingApiCallId === apiCall.id}
-                                      hasBackgroundImage={!!backgroundImageUrl}
-                                    />
-                                  ))}
-                                </div>
-                              </SortableContext>
-                            </DndContext>
+                            <ApiCallGrid
+                              apiCalls={categoryApiCalls}
+                              columns={category.columns ?? 4}
+                              categoryId={category.id}
+                              editMode={editMode}
+                              onEdit={handleEditApiCall}
+                              onDelete={(id) => deleteApiCallMutation.mutate(id)}
+                              onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
+                              onDragStart={handleApiCallDragStart}
+                              onDragEnter={handleDragEnter}
+                              onDragLeave={handleDragLeave}
+                              onDrop={handleDrop}
+                              dropTarget={dropTarget}
+                              executingApiCallId={executingApiCallId}
+                              hasBackgroundImage={!!backgroundImageUrl}
+                            />
                           )}
                         </div>
                       </CollapsibleContent>
