@@ -1,6 +1,7 @@
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, ShieldAlert } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -10,6 +11,8 @@ import { DynamicIcon } from "./dynamic-icon";
 import { HealthIndicator } from "./health-indicator";
 import { CARD_COLORS, type Bookmark } from "@shared/schema";
 import { cn } from "@/lib/utils";
+
+const SSL_WARNING_THRESHOLD = 30; // Days before expiry to show warning
 
 function getColorClasses(colorId: string) {
   const color = CARD_COLORS.find(c => c.id === colorId);
@@ -98,7 +101,24 @@ export function BookmarkCard({
         )}
 
         {bookmark.healthCheckEnabled && (
-          <div className={cn("absolute top-3 right-3", editMode && "group-hover:invisible")}>
+          <div className={cn("absolute top-3 right-3 flex items-center gap-2", editMode && "group-hover:invisible")}>
+            {bookmark.sslExpiryDays !== null && bookmark.sslExpiryDays <= SSL_WARNING_THRESHOLD && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge 
+                    variant="outline" 
+                    className="bg-orange-500/20 text-orange-500 border-orange-500/50 text-xs px-1.5 py-0.5"
+                    data-testid={`badge-ssl-warning-${bookmark.id}`}
+                  >
+                    <ShieldAlert className="h-3 w-3 mr-1" />
+                    SSL
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  SSL certificate expires in {bookmark.sslExpiryDays} days
+                </TooltipContent>
+              </Tooltip>
+            )}
             <HealthIndicator status={bookmark.healthStatus} isAnimating={isHealthAnimating} />
           </div>
         )}

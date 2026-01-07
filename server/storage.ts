@@ -22,7 +22,7 @@ export interface IStorage {
   getBookmark(id: string): Promise<Bookmark | undefined>;
   createBookmark(bookmark: InsertBookmark): Promise<Bookmark>;
   updateBookmark(id: string, bookmark: Partial<InsertBookmark>): Promise<Bookmark | undefined>;
-  updateBookmarkHealth(id: string, status: "online" | "offline" | "unknown"): Promise<Bookmark | undefined>;
+  updateBookmarkHealth(id: string, status: "online" | "offline" | "unknown", sslExpiryDays?: number | null): Promise<Bookmark | undefined>;
   deleteBookmark(id: string): Promise<boolean>;
 
   getApiCalls(): Promise<ApiCall[]>;
@@ -198,6 +198,7 @@ export class YamlStorage implements IStorage {
       id,
       healthStatus: "unknown",
       lastHealthCheck: null,
+      sslExpiryDays: null,
     };
     this.bookmarks.set(id, bookmark);
     this.saveToFile();
@@ -213,13 +214,14 @@ export class YamlStorage implements IStorage {
     return updated;
   }
 
-  async updateBookmarkHealth(id: string, status: "online" | "offline" | "unknown"): Promise<Bookmark | undefined> {
+  async updateBookmarkHealth(id: string, status: "online" | "offline" | "unknown", sslExpiryDays?: number | null): Promise<Bookmark | undefined> {
     const existing = this.bookmarks.get(id);
     if (!existing) return undefined;
     const updated = {
       ...existing,
       healthStatus: status,
       lastHealthCheck: new Date().toISOString(),
+      sslExpiryDays: sslExpiryDays !== undefined ? sslExpiryDays : existing.sslExpiryDays,
     };
     this.bookmarks.set(id, updated);
     this.saveToFile();

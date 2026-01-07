@@ -141,6 +141,7 @@ export async function registerRoutes(
       }
 
       let status: "online" | "offline" = "offline";
+      let sslExpiryDays: number | null = null;
       const config = bookmark.healthCheckConfig;
       const healthUrl = config?.url || bookmark.url;
       const expectedStatus = config?.expectedStatus || 200;
@@ -151,7 +152,7 @@ export async function registerRoutes(
           const urlObj = new URL(healthUrl);
           if (urlObj.protocol === "https:") {
             const https = await import("https");
-            const sslValid = await new Promise<boolean>((resolve) => {
+            const sslResult = await new Promise<{ valid: boolean; daysUntilExpiry: number | null }>((resolve) => {
               const req = https.request({
                 hostname: urlObj.hostname,
                 port: urlObj.port || 443,
@@ -161,22 +162,26 @@ export async function registerRoutes(
                 const cert = (response.socket as any).getPeerCertificate?.();
                 if (cert && cert.valid_to) {
                   const expiryDate = new Date(cert.valid_to);
-                  resolve(expiryDate > new Date());
+                  const now = new Date();
+                  const daysUntilExpiry = Math.ceil((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                  resolve({ valid: expiryDate > now, daysUntilExpiry });
                 } else {
-                  resolve(true);
+                  resolve({ valid: true, daysUntilExpiry: null });
                 }
               });
-              req.on("error", () => resolve(false));
+              req.on("error", () => resolve({ valid: false, daysUntilExpiry: null }));
               req.on("timeout", () => {
                 req.destroy();
-                resolve(false);
+                resolve({ valid: false, daysUntilExpiry: null });
               });
               req.end();
             });
             
-            if (!sslValid) {
+            sslExpiryDays = sslResult.daysUntilExpiry;
+            
+            if (!sslResult.valid) {
               status = "offline";
-              const updated = await storage.updateBookmarkHealth(id, status);
+              const updated = await storage.updateBookmarkHealth(id, status, sslExpiryDays);
               return res.json(updated);
             }
           }
@@ -212,7 +217,7 @@ export async function registerRoutes(
         status = "offline";
       }
 
-      const updated = await storage.updateBookmarkHealth(id, status);
+      const updated = await storage.updateBookmarkHealth(id, status, sslExpiryDays);
       res.json(updated);
     } catch (error) {
       res.status(500).json({ error: "Failed to check health" });
