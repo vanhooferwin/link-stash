@@ -15,13 +15,13 @@ bookmarks:
   - name: BitBucket
     description: Mpluz* version control
     url: https://bitbucket.org/mpluz/workspace/overview/
-    icon: Wrench
+    icon: Bitbucket
     categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
     healthCheckEnabled: true
     order: 0
     id: ad857c46-d845-4ede-9ed9-63a1c21b728c
     healthStatus: online
-    lastHealthCheck: '2026-01-07T17:00:16.660Z'
+    lastHealthCheck: '2026-01-07T17:32:44.521Z'
     color: green
     healthCheckConfig:
       expectedStatus: 200
@@ -45,7 +45,7 @@ bookmarks:
   - name: JIRA
     description: Tickets & more
     url: https://mpluz-software.atlassian.net/jira/software/c/projects/MP/boards/1
-    icon: Globe
+    icon: Jira
     color: blue
     categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
     healthCheckEnabled: true
@@ -55,7 +55,7 @@ bookmarks:
     order: 1
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
     healthStatus: online
-    lastHealthCheck: '2026-01-07T17:00:17.916Z'
+    lastHealthCheck: '2026-01-07T17:32:35.111Z'
     sslExpiryDays: null
   - name: SharePoint
     description: ''
@@ -114,7 +114,7 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:26:34.672Z'
     sslExpiryDays: null
-  - name: OK-3
+  - name: OK-27
     description: NMS
     url: https://10.74.27.11:8443/nms
     icon: Circuit
@@ -127,7 +127,7 @@ bookmarks:
     order: 0
     id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T17:28:56.937Z'
+    lastHealthCheck: '2026-01-07T17:32:20.987Z'
     sslExpiryDays: null
 apiCalls: []
 users: []
