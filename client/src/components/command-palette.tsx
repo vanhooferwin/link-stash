@@ -150,7 +150,7 @@ export function CommandPalette({
         className="max-w-2xl p-0 gap-0 overflow-hidden glass-command-palette"
         onKeyDown={handleKeyDown}
       >
-        <div className="flex items-center border-b px-4 py-3">
+        <div className="flex items-center border-b px-4 py-3 pr-12">
           <Search className="h-5 w-5 text-muted-foreground mr-3" />
           <Input
             ref={inputRef}
@@ -160,9 +160,6 @@ export function CommandPalette({
             className="border-0 p-0 h-auto text-base focus-visible:ring-0 bg-transparent"
             data-testid="input-command-search"
           />
-          <kbd className="ml-auto pointer-events-none h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-mono text-xs font-medium opacity-70 hidden sm:flex">
-            ESC
-          </kbd>
         </div>
 
         {results.length > 0 && (
