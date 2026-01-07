@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark, Download, Upload } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +35,7 @@ interface AppSidebarProps {
   isCreating?: boolean;
   isUpdating?: boolean;
   editMode?: boolean;
+  hasBackgroundImage?: boolean;
 }
 
 export function AppSidebar({
@@ -46,6 +48,7 @@ export function AppSidebar({
   isCreating = false,
   isUpdating = false,
   editMode = false,
+  hasBackgroundImage = false,
 }: AppSidebarProps) {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -131,8 +134,8 @@ export function AppSidebar({
 
   return (
     <>
-      <Sidebar>
-        <SidebarHeader className="p-4 border-b border-sidebar-border">
+      <Sidebar className={cn(hasBackgroundImage && "bg-sidebar/70 backdrop-blur-xl")}>
+        <SidebarHeader className={cn("p-4 border-b border-sidebar-border", hasBackgroundImage && "bg-transparent")}>
           <div className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Bookmark className="h-5 w-5 text-primary" />
@@ -221,28 +224,30 @@ export function AppSidebar({
         </SidebarContent>
 
         <SidebarFooter className="p-4 border-t border-sidebar-border space-y-3">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={handleExport}
-              data-testid="button-export-config"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={handleImport}
-              data-testid="button-import-config"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Import
-            </Button>
-          </div>
+          {editMode && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={handleExport}
+                data-testid="button-export-config"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={handleImport}
+                data-testid="button-import-config"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </Button>
+            </div>
+          )}
           <input
             ref={fileInputRef}
             type="file"

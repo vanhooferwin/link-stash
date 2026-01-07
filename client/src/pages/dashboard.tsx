@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown } from "lucide-react";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,7 +25,7 @@ import { ResponseModal } from "@/components/response-modal";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall } from "@shared/schema";
+import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall, Settings as SettingsType } from "@shared/schema";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -41,6 +41,8 @@ export default function Dashboard() {
   const [editMode, setEditMode] = useState(false);
   const [animatingHealthId, setAnimatingHealthId] = useState<string | null>(null);
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [showBgInput, setShowBgInput] = useState(false);
+  const [bgInputValue, setBgInputValue] = useState("");
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -53,6 +55,28 @@ export default function Dashboard() {
   const { data: apiCalls = [], isLoading: apiCallsLoading } = useQuery<ApiCall[]>({
     queryKey: ["/api/api-calls"],
   });
+
+  const { data: settings } = useQuery<SettingsType>({
+    queryKey: ["/api/settings"],
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (data: Partial<SettingsType>) => apiRequest("PATCH", "/api/settings", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      toast({ title: "Settings updated" });
+      setShowBgInput(false);
+    },
+    onError: () => {
+      toast({ title: "Failed to update settings", variant: "destructive" });
+    },
+  });
+
+  const handleSetBackground = () => {
+    updateSettingsMutation.mutate({ backgroundImageUrl: bgInputValue || undefined });
+  };
+
+  const backgroundImageUrl = settings?.backgroundImageUrl;
 
   const createCategoryMutation = useMutation({
     mutationFn: (data: { name: string; order: number }) =>
@@ -292,7 +316,13 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider style={sidebarStyle as React.CSSProperties}>
-      <div className="flex h-screen w-full">
+      <div className="flex h-screen w-full relative">
+        {backgroundImageUrl && (
+          <div
+            className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
+            style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+          />
+        )}
         <AppSidebar
           categories={categories}
           selectedCategoryId={selectedCategoryId}
@@ -303,10 +333,16 @@ export default function Dashboard() {
           isCreating={createCategoryMutation.isPending}
           isUpdating={updateCategoryMutation.isPending}
           editMode={editMode}
+          hasBackgroundImage={!!backgroundImageUrl}
         />
 
         <div className="flex flex-col flex-1 min-w-0">
-          <header className="flex items-center justify-between gap-4 p-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <header className={cn(
+            "flex items-center justify-between gap-4 p-4 border-b",
+            backgroundImageUrl
+              ? "bg-background/70 backdrop-blur-xl"
+              : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          )}>
             <div className="flex items-center gap-4 flex-1">
               <SidebarTrigger data-testid="button-sidebar-toggle" />
               <div className="relative flex-1 max-w-md">
@@ -343,6 +379,19 @@ export default function Dashboard() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
+              {editMode && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    setBgInputValue(backgroundImageUrl || "");
+                    setShowBgInput(!showBgInput);
+                  }}
+                  data-testid="button-background-settings"
+                >
+                  <Image className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 variant={editMode ? "default" : "outline"}
                 size="icon"
@@ -355,7 +404,44 @@ export default function Dashboard() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto p-6">
+          {showBgInput && editMode && (
+            <div className={cn(
+              "flex items-center gap-2 p-4 border-b",
+              backgroundImageUrl ? "bg-background/70 backdrop-blur-xl" : "bg-background"
+            )}>
+              <Input
+                type="url"
+                placeholder="Background image URL (e.g., https://images.unsplash.com/...)"
+                value={bgInputValue}
+                onChange={(e) => setBgInputValue(e.target.value)}
+                className="flex-1"
+                data-testid="input-background-url"
+              />
+              <Button
+                onClick={handleSetBackground}
+                disabled={updateSettingsMutation.isPending}
+                data-testid="button-apply-background"
+              >
+                Apply
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setBgInputValue("");
+                  updateSettingsMutation.mutate({ backgroundImageUrl: undefined });
+                }}
+                disabled={updateSettingsMutation.isPending}
+                data-testid="button-clear-background"
+              >
+                Clear
+              </Button>
+            </div>
+          )}
+
+          <main className={cn(
+            "flex-1 overflow-auto p-6",
+            backgroundImageUrl && "bg-transparent"
+          )}>
             {isLoading ? (
               <div className="flex items-center justify-center h-full">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -428,6 +514,7 @@ export default function Dashboard() {
                                   onDelete={(id) => deleteBookmarkMutation.mutate(id)}
                                   editMode={editMode}
                                   isHealthAnimating={animatingHealthId === bookmark.id}
+                                  hasBackgroundImage={!!backgroundImageUrl}
                                 />
                               ))}
                             </div>
@@ -443,6 +530,7 @@ export default function Dashboard() {
                                   onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
                                   editMode={editMode}
                                   isExecuting={executingApiCallId === apiCall.id}
+                                  hasBackgroundImage={!!backgroundImageUrl}
                                 />
                               ))}
                             </div>

@@ -141,3 +141,9 @@ export const insertUserSchema = z.object({
 });
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = { id: string; username: string; password: string };
+
+export const settingsSchema = z.object({
+  backgroundImageUrl: z.string().optional(),
+});
+
+export type Settings = z.infer<typeof settingsSchema>;

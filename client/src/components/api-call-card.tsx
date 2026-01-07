@@ -24,6 +24,7 @@ interface ApiCallCardProps {
   onExecute: (apiCall: ApiCall) => void;
   isExecuting?: boolean;
   editMode?: boolean;
+  hasBackgroundImage?: boolean;
 }
 
 export function ApiCallCard({
@@ -33,6 +34,7 @@ export function ApiCallCard({
   onExecute,
   isExecuting = false,
   editMode = false,
+  hasBackgroundImage = false,
 }: ApiCallCardProps) {
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,7 +57,7 @@ export function ApiCallCard({
     <Card
       className={cn(
         "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate",
-        colorClasses.bg,
+        hasBackgroundImage && !colorClasses.bg ? "bg-card/70 backdrop-blur-xl" : colorClasses.bg,
         colorClasses.border && `border ${colorClasses.border}`
       )}
       data-testid={`api-call-card-${apiCall.id}`}
