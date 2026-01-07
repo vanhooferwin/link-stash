@@ -413,6 +413,7 @@ export default function Dashboard() {
   const backgroundImageUrl = settings?.backgroundImageUrl;
   const backgroundBrightness = settings?.backgroundBrightness ?? 100;
   const backgroundOpacity = settings?.backgroundOpacity ?? 100;
+  const healthCheckInterval = settings?.healthCheckInterval ?? 60;
 
   // Function to refresh all health checks
   const refreshAllHealthChecks = async () => {
@@ -435,7 +436,7 @@ export default function Dashboard() {
     setIsRefreshingHealth(false);
   };
 
-  // Run health checks on initial load
+  // Run health checks on initial load and on interval
   useEffect(() => {
     if (bookmarks.length > 0 && !bookmarksLoading) {
       const hasUnknownHealth = bookmarks.some(b => b.healthCheckEnabled && b.healthStatus === "unknown");
@@ -444,6 +445,18 @@ export default function Dashboard() {
       }
     }
   }, [bookmarksLoading]);
+
+  // Automatic health checks on interval
+  useEffect(() => {
+    if (!healthCheckInterval || bookmarksLoading) return;
+    
+    const intervalMs = healthCheckInterval * 1000;
+    const intervalId = setInterval(() => {
+      refreshAllHealthChecks();
+    }, intervalMs);
+
+    return () => clearInterval(intervalId);
+  }, [healthCheckInterval, bookmarksLoading]);
 
   const createCategoryMutation = useMutation({
     mutationFn: (data: { name: string; order: number }) =>
@@ -1086,6 +1099,19 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
+              <div className="flex items-center gap-3">
+                <Label className="text-sm text-muted-foreground whitespace-nowrap">Health Check Interval</Label>
+                <Slider
+                  value={[healthCheckInterval]}
+                  onValueChange={([value]) => updateSettingsMutation.mutate({ healthCheckInterval: value })}
+                  min={10}
+                  max={300}
+                  step={10}
+                  className="w-32"
+                  data-testid="slider-health-interval"
+                />
+                <span className="text-sm text-muted-foreground w-12 text-right">{healthCheckInterval}s</span>
+              </div>
             </div>
           )}
 
