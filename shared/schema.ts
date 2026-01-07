@@ -55,7 +55,8 @@ export const ICON_CATEGORIES = {
     "Settings", "Cog", "Wrench", "Hammer", "Tool",
     "Zap", "Flame", "Sun", "Moon", "Coffee",
     "Book", "Newspaper", "List", "Grid", "Search", "Eye", "Edit", "Trash", "Plus", "Check",
-    "Download", "Upload", "Refresh", "Package", "Box", "Cube", "Hexagon"
+    "Download", "Upload", "Refresh", "Package", "Box", "Cube", "Hexagon",
+    "Hand", "Pointer", "MousePointer", "Monitor", "MonitorSmartphone", "Tv", "Tablet", "Smartphone", "Touchscreen", "Nas", "ServerStack"
   ],
   "Payment & Commerce": [
     "Stripe", "Paypal", "Shopify", "CreditCard", "DollarSign", "Wallet",
