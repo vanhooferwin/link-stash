@@ -69,6 +69,19 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/categories/reorder", async (req, res) => {
+    try {
+      const { ids } = req.body as { ids: string[] };
+      if (!Array.isArray(ids)) {
+        return res.status(400).json({ error: "ids must be an array" });
+      }
+      await storage.reorderCategories(ids);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reorder categories" });
+    }
+  });
+
   // Bookmarks
   app.get("/api/bookmarks", async (req, res) => {
     try {
@@ -134,6 +147,19 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete bookmark" });
+    }
+  });
+
+  app.post("/api/bookmarks/reorder", async (req, res) => {
+    try {
+      const { ids } = req.body as { ids: string[] };
+      if (!Array.isArray(ids)) {
+        return res.status(400).json({ error: "ids must be an array" });
+      }
+      await storage.reorderBookmarks(ids);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reorder bookmarks" });
     }
   });
 
@@ -294,6 +320,19 @@ export async function registerRoutes(
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: "Failed to delete API call" });
+    }
+  });
+
+  app.post("/api/api-calls/reorder", async (req, res) => {
+    try {
+      const { ids } = req.body as { ids: string[] };
+      if (!Array.isArray(ids)) {
+        return res.status(400).json({ error: "ids must be an array" });
+      }
+      await storage.reorderApiCalls(ids);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to reorder API calls" });
     }
   });
 

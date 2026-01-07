@@ -7,6 +7,10 @@ categories:
     order: 0
     id: fdbb9cf3-4255-4da3-93c7-81b73212adeb
     columns: 6
+  - name: DevOps
+    order: 0
+    columns: 6
+    id: 684f8a7c-8137-4f3b-b917-4327c9e0be6f
 bookmarks:
   - name: BitBucket
     description: Mpluz* version control

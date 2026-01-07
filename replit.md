@@ -36,6 +36,8 @@ Preferred communication style: Simple, everyday language.
 - Create, edit, and delete bookmark categories
 - Filter bookmarks and API calls by category
 - Default "General" category provided
+- Customizable column layout (2-8 columns per category)
+- Drag-and-drop reordering in edit mode
 
 ### Bookmarks
 - Add bookmarks with name, description, URL, and icon
@@ -43,12 +45,14 @@ Preferred communication style: Simple, everyday language.
 - Optional health check feature to ping URLs
 - Green/red/gray indicators for health status
 - Opens in new tab when clicked
+- Drag-and-drop reordering within categories (edit mode)
 
 ### API Calls
 - Create API call templates with GET/POST/PUT/DELETE/PATCH methods
 - Add custom headers and request body (JSON)
 - Execute API calls and view response in modal
 - Response modal shows status, headers, and body with copy functionality
+- Drag-and-drop reordering within categories (edit mode)
 
 ### UI Features
 - Dark/light mode toggle with localStorage persistence
@@ -63,6 +67,7 @@ Preferred communication style: Simple, everyday language.
 - `POST /api/categories` - Create a category
 - `PATCH /api/categories/:id` - Update a category
 - `DELETE /api/categories/:id` - Delete a category
+- `POST /api/categories/reorder` - Reorder categories
 
 ### Bookmarks
 - `GET /api/bookmarks` - List all bookmarks
@@ -71,6 +76,7 @@ Preferred communication style: Simple, everyday language.
 - `PATCH /api/bookmarks/:id` - Update a bookmark
 - `DELETE /api/bookmarks/:id` - Delete a bookmark
 - `POST /api/bookmarks/:id/health` - Run health check on bookmark URL
+- `POST /api/bookmarks/reorder` - Reorder bookmarks within a category
 
 ### API Calls
 - `GET /api/api-calls` - List all API calls
@@ -79,6 +85,7 @@ Preferred communication style: Simple, everyday language.
 - `PATCH /api/api-calls/:id` - Update an API call
 - `DELETE /api/api-calls/:id` - Delete an API call
 - `POST /api/api-calls/:id/execute` - Execute an API call and return response
+- `POST /api/api-calls/reorder` - Reorder API calls within a category
 
 ### Health Check
 - `GET /api/health/ping?url=<url>` - Ping a URL and return status
