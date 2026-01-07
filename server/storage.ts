@@ -294,6 +294,7 @@ export class YamlStorage implements IStorage {
       categories: Array.from(this.categories.values()),
       bookmarks: Array.from(this.bookmarks.values()),
       apiCalls: Array.from(this.apiCalls.values()),
+      settings: this.settings,
     };
     return yaml.dump(data, {
       indent: 2,
@@ -330,6 +331,11 @@ export class YamlStorage implements IStorage {
         order: 0,
       };
       this.categories.set(defaultCategory.id, defaultCategory);
+    }
+
+    // Import settings if present
+    if (data.settings) {
+      this.settings = { ...this.settings, ...data.settings };
     }
 
     this.saveToFile();
