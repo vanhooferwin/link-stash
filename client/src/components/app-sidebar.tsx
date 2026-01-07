@@ -134,8 +134,8 @@ export function AppSidebar({
 
   return (
     <>
-      <Sidebar className={cn(hasBackgroundImage && "bg-sidebar/70 backdrop-blur-xl")}>
-        <SidebarHeader className={cn("p-4 border-b border-sidebar-border", hasBackgroundImage && "bg-transparent")}>
+      <Sidebar>
+        <SidebarHeader className="p-4 border-b border-sidebar-border">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Bookmark className="h-5 w-5 text-primary" />

@@ -19,6 +19,7 @@ bookmarks:
     color: green
     healthCheckConfig:
       expectedStatus: 200
+      checkSsl: true
   - name: OK 27
     description: Testopstelling OK-27
     url: http://10.74.27.11:3000

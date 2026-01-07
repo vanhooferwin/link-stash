@@ -309,3 +309,19 @@
 .animate-health-blink {
   animation: health-blink 0.6s ease-in-out;
 }
+
+/* Glass effect when background image is present */
+[data-has-bg="true"] [data-slot="sidebar-inner"] {
+  background-color: hsl(var(--sidebar) / 0.7) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+[data-has-bg="true"] [data-slot="sidebar-container"] {
+  background-color: transparent !important;
+}
+
+[data-has-bg="true"] .sidebar-header-glass,
+[data-has-bg="true"] .sidebar-footer-glass {
+  background-color: transparent !important;
+}
