@@ -135,7 +135,7 @@ export function AppSidebar({
   return (
     <>
       <Sidebar>
-        <SidebarHeader className="p-4 border-b border-sidebar-border">
+        <SidebarHeader className="h-[65px] px-4 flex items-center border-b border-sidebar-border">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Bookmark className="h-5 w-5 text-primary" />

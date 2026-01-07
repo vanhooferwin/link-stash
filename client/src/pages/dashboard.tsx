@@ -381,7 +381,7 @@ export default function Dashboard() {
 
         <div className="flex flex-col flex-1 min-w-0">
           <header className={cn(
-            "flex items-center justify-between gap-4 p-4 border-b",
+            "h-[65px] flex items-center justify-between gap-4 px-4 border-b",
             backgroundImageUrl
               ? "glass-header"
               : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
