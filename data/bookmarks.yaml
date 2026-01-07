@@ -4,11 +4,11 @@ categories:
     order: 0
     columns: 6
   - name: Test opstelling
-    order: 0
+    order: 1
     id: fdbb9cf3-4255-4da3-93c7-81b73212adeb
     columns: 6
   - name: DevOps
-    order: 0
+    order: 2
     columns: 6
     id: 684f8a7c-8137-4f3b-b917-4327c9e0be6f
 bookmarks:
@@ -52,7 +52,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 0
+    order: 2
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
     healthStatus: online
     lastHealthCheck: '2026-01-07T14:37:10.038Z'
@@ -64,7 +64,7 @@ bookmarks:
     color: blue
     categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
     healthCheckEnabled: false
-    order: 0
+    order: 1
     id: ae871d60-d137-465d-b5e6-9e6526dd6929
     healthStatus: unknown
     lastHealthCheck: null

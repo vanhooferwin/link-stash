@@ -296,15 +296,17 @@ export default function Dashboard() {
   });
 
   const createBookmarkMutation = useMutation({
-    mutationFn: (data: InsertBookmark) => apiRequest("POST", "/api/bookmarks", data),
-    onSuccess: async (response) => {
+    mutationFn: async (data: InsertBookmark) => {
+      const response = await apiRequest("POST", "/api/bookmarks", data);
+      return response.json() as Promise<BookmarkType>;
+    },
+    onSuccess: async (bookmark) => {
       queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
       setBookmarkModalOpen(false);
       setEditingBookmark(null);
       toast({ title: "Bookmark created successfully" });
       
       // Run health check immediately if enabled
-      const bookmark = response as BookmarkType;
       if (bookmark.healthCheckEnabled) {
         try {
           await apiRequest("POST", `/api/bookmarks/${bookmark.id}/health`);
@@ -385,31 +387,82 @@ export default function Dashboard() {
 
   const reorderCategoriesMutation = useMutation({
     mutationFn: (ids: string[]) => apiRequest("POST", "/api/categories/reorder", { ids }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    onMutate: async (ids: string[]) => {
+      await queryClient.cancelQueries({ queryKey: ["/api/categories"] });
+      const previousCategories = queryClient.getQueryData<Category[]>(["/api/categories"]);
+      queryClient.setQueryData(["/api/categories"], (old: Category[] | undefined) => {
+        if (!old) return old;
+        return ids.map((id, index) => {
+          const cat = old.find(c => c.id === id);
+          return cat ? { ...cat, order: index } : null;
+        }).filter(Boolean) as Category[];
+      });
+      return { previousCategories };
     },
-    onError: () => {
+    onError: (_err, _ids, context) => {
+      if (context?.previousCategories) {
+        queryClient.setQueryData(["/api/categories"], context.previousCategories);
+      }
       toast({ title: "Failed to reorder categories", variant: "destructive" });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
     },
   });
 
   const reorderBookmarksMutation = useMutation({
     mutationFn: (ids: string[]) => apiRequest("POST", "/api/bookmarks/reorder", { ids }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+    onMutate: async (ids: string[]) => {
+      await queryClient.cancelQueries({ queryKey: ["/api/bookmarks"] });
+      const previousBookmarks = queryClient.getQueryData<BookmarkType[]>(["/api/bookmarks"]);
+      queryClient.setQueryData(["/api/bookmarks"], (old: BookmarkType[] | undefined) => {
+        if (!old) return old;
+        const reorderedIds = new Set(ids);
+        const unchanged = old.filter(b => !reorderedIds.has(b.id));
+        const reordered = ids.map((id, index) => {
+          const bookmark = old.find(b => b.id === id);
+          return bookmark ? { ...bookmark, order: index } : null;
+        }).filter(Boolean) as BookmarkType[];
+        return [...unchanged, ...reordered];
+      });
+      return { previousBookmarks };
     },
-    onError: () => {
+    onError: (_err, _ids, context) => {
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData(["/api/bookmarks"], context.previousBookmarks);
+      }
       toast({ title: "Failed to reorder bookmarks", variant: "destructive" });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
     },
   });
 
   const reorderApiCallsMutation = useMutation({
     mutationFn: (ids: string[]) => apiRequest("POST", "/api/api-calls/reorder", { ids }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/api-calls"] });
+    onMutate: async (ids: string[]) => {
+      await queryClient.cancelQueries({ queryKey: ["/api/api-calls"] });
+      const previousApiCalls = queryClient.getQueryData<ApiCall[]>(["/api/api-calls"]);
+      queryClient.setQueryData(["/api/api-calls"], (old: ApiCall[] | undefined) => {
+        if (!old) return old;
+        const reorderedIds = new Set(ids);
+        const unchanged = old.filter(a => !reorderedIds.has(a.id));
+        const reordered = ids.map((id, index) => {
+          const apiCall = old.find(a => a.id === id);
+          return apiCall ? { ...apiCall, order: index } : null;
+        }).filter(Boolean) as ApiCall[];
+        return [...unchanged, ...reordered];
+      });
+      return { previousApiCalls };
     },
-    onError: () => {
+    onError: (_err, _ids, context) => {
+      if (context?.previousApiCalls) {
+        queryClient.setQueryData(["/api/api-calls"], context.previousApiCalls);
+      }
       toast({ title: "Failed to reorder API calls", variant: "destructive" });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/api-calls"] });
     },
   });
 
