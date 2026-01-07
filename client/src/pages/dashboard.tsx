@@ -875,9 +875,9 @@ export default function Dashboard() {
     setBookmarkModalOpen(true);
   };
 
-  const handleBookmarkSubmit = (data: InsertBookmark) => {
+  const handleBookmarkSubmit = (data: Omit<InsertBookmark, 'gridRow' | 'gridColumn'>) => {
     if (editingBookmark) {
-      updateBookmarkMutation.mutate({ id: editingBookmark.id, data });
+      updateBookmarkMutation.mutate({ id: editingBookmark.id, data: data as InsertBookmark });
     } else {
       const categoryBookmarks = bookmarks.filter(b => b.categoryId === data.categoryId);
       const nextPosition = findNextGridPosition(categoryBookmarks, data.categoryId);
@@ -913,9 +913,9 @@ export default function Dashboard() {
     setApiCallModalOpen(true);
   };
 
-  const handleApiCallSubmit = (data: InsertApiCall) => {
+  const handleApiCallSubmit = (data: Omit<InsertApiCall, 'gridRow' | 'gridColumn'>) => {
     if (editingApiCall) {
-      updateApiCallMutation.mutate({ id: editingApiCall.id, data });
+      updateApiCallMutation.mutate({ id: editingApiCall.id, data: data as InsertApiCall });
     } else {
       const categoryApiCalls = apiCalls.filter(a => a.categoryId === data.categoryId);
       const nextPosition = findNextGridPosition(categoryApiCalls, data.categoryId);
