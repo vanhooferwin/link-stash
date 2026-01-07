@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DynamicIcon } from "./dynamic-icon";
 import { Search, ExternalLink, Zap, ChevronRight } from "lucide-react";
@@ -149,7 +150,11 @@ export function CommandPalette({
       <DialogContent 
         className="max-w-2xl p-0 gap-0 overflow-hidden glass-command-palette"
         onKeyDown={handleKeyDown}
+        aria-describedby={undefined}
       >
+        <VisuallyHidden>
+          <DialogTitle>Command Palette</DialogTitle>
+        </VisuallyHidden>
         <div className="flex items-center border-b px-4 py-3 pr-12">
           <Search className="h-5 w-5 text-muted-foreground mr-3" />
           <Input

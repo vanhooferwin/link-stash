@@ -1100,17 +1100,22 @@ export default function Dashboard() {
                 </div>
               )}
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground whitespace-nowrap">Health Check Interval</Label>
+                <Label className="text-sm text-muted-foreground whitespace-nowrap">Health Check</Label>
                 <Slider
                   value={[healthCheckInterval]}
                   onValueChange={([value]) => updateSettingsMutation.mutate({ healthCheckInterval: value })}
                   min={10}
-                  max={300}
+                  max={3600}
                   step={10}
                   className="w-32"
                   data-testid="slider-health-interval"
                 />
-                <span className="text-sm text-muted-foreground w-12 text-right">{healthCheckInterval}s</span>
+                <span className="text-sm text-muted-foreground w-16 text-right">
+                  {healthCheckInterval >= 60 
+                    ? `${Math.floor(healthCheckInterval / 60)}m${healthCheckInterval % 60 ? ` ${healthCheckInterval % 60}s` : ''}`
+                    : `${healthCheckInterval}s`
+                  }
+                </span>
               </div>
             </div>
           )}
