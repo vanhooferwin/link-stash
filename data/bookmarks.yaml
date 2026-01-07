@@ -74,7 +74,7 @@ apiCalls:
     icon: Zap
     order: 0
     id: be4b8662-f146-4e04-a3ff-eb2f8b25d77c
-    color: pink
+    color: default
     responseValidationEnabled: false
     responseValidationConfig:
       expectedStatus: 200
