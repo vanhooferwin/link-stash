@@ -17,6 +17,7 @@ interface BookmarkCardProps {
   onDelete: (id: string) => void;
   onHealthCheck: (id: string) => void;
   isCheckingHealth?: boolean;
+  editMode?: boolean;
 }
 
 export function BookmarkCard({
@@ -25,6 +26,7 @@ export function BookmarkCard({
   onDelete,
   onHealthCheck,
   isCheckingHealth = false,
+  editMode = false,
 }: BookmarkCardProps) {
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,58 +58,60 @@ export function BookmarkCard({
         className="group relative p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover-elevate active-elevate-2"
         data-testid={`bookmark-card-${bookmark.id}`}
       >
-        <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          {bookmark.healthCheckEnabled && (
+        {editMode && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            {bookmark.healthCheckEnabled && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={handleHealthCheck}
+                    disabled={isCheckingHealth}
+                    data-testid={`button-health-check-${bookmark.id}`}
+                  >
+                    <RefreshCw
+                      className={cn("h-3.5 w-3.5", isCheckingHealth && "animate-spin")}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Check health</TooltipContent>
+              </Tooltip>
+            )}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7"
-                  onClick={handleHealthCheck}
-                  disabled={isCheckingHealth}
-                  data-testid={`button-health-check-${bookmark.id}`}
+                  onClick={handleEdit}
+                  data-testid={`button-edit-bookmark-${bookmark.id}`}
                 >
-                  <RefreshCw
-                    className={cn("h-3.5 w-3.5", isCheckingHealth && "animate-spin")}
-                  />
+                  <Edit className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Check health</TooltipContent>
+              <TooltipContent>Edit</TooltipContent>
             </Tooltip>
-          )}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={handleEdit}
-                data-testid={`button-edit-bookmark-${bookmark.id}`}
-              >
-                <Edit className="h-3.5 w-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Edit</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-destructive"
-                onClick={handleDelete}
-                data-testid={`button-delete-bookmark-${bookmark.id}`}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
-          </Tooltip>
-        </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-destructive"
+                  onClick={handleDelete}
+                  data-testid={`button-delete-bookmark-${bookmark.id}`}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Delete</TooltipContent>
+            </Tooltip>
+          </div>
+        )}
 
         {bookmark.healthCheckEnabled && (
-          <div className="absolute top-3 right-3 group-hover:invisible">
+          <div className={cn("absolute top-3 right-3", editMode && "group-hover:invisible")}>
             <HealthIndicator status={bookmark.healthStatus} />
           </div>
         )}

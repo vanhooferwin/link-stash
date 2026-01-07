@@ -31,6 +31,7 @@ interface AppSidebarProps {
   onDeleteCategory: (id: string) => void;
   isCreating?: boolean;
   isUpdating?: boolean;
+  editMode?: boolean;
 }
 
 export function AppSidebar({
@@ -42,6 +43,7 @@ export function AppSidebar({
   onDeleteCategory,
   isCreating = false,
   isUpdating = false,
+  editMode = false,
 }: AppSidebarProps) {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -85,15 +87,17 @@ export function AppSidebar({
           <SidebarGroup>
             <SidebarGroupLabel className="flex items-center justify-between gap-2 pr-2">
               <span>Categories</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={handleAddCategory}
-                data-testid="button-add-category"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
+              {editMode && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6"
+                  onClick={handleAddCategory}
+                  data-testid="button-add-category"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -118,33 +122,35 @@ export function AppSidebar({
                       <Folder className="h-4 w-4" />
                       <span>{category.name}</span>
                     </SidebarMenuButton>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          className="text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 peer-data-[size=default]/menu-button:top-1.5 group-data-[collapsible=icon]:hidden peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0"
-                          data-testid={`button-category-menu-${category.id}`}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent side="right" align="start">
-                        <DropdownMenuItem
-                          onClick={() => handleEditCategory(category)}
-                          data-testid={`button-edit-category-${category.id}`}
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onDeleteCategory(category.id)}
-                          className="text-destructive focus:text-destructive"
-                          data-testid={`button-delete-category-${category.id}`}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {editMode && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 peer-data-[size=default]/menu-button:top-1.5 group-data-[collapsible=icon]:hidden peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0"
+                            data-testid={`button-category-menu-${category.id}`}
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="right" align="start">
+                          <DropdownMenuItem
+                            onClick={() => handleEditCategory(category)}
+                            data-testid={`button-edit-category-${category.id}`}
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onDeleteCategory(category.id)}
+                            className="text-destructive focus:text-destructive"
+                            data-testid={`button-delete-category-${category.id}`}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
