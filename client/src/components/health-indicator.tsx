@@ -4,24 +4,22 @@ interface HealthIndicatorProps {
   status: "online" | "offline" | "unknown";
   className?: string;
   showLabel?: boolean;
+  isAnimating?: boolean;
 }
 
-export function HealthIndicator({ status, className, showLabel = false }: HealthIndicatorProps) {
+export function HealthIndicator({ status, className, showLabel = false, isAnimating = false }: HealthIndicatorProps) {
   const statusConfig = {
     online: {
       color: "bg-emerald-500",
       label: "Online",
-      pulse: false,
     },
     offline: {
       color: "bg-red-500",
       label: "Offline",
-      pulse: true,
     },
     unknown: {
       color: "bg-gray-400 dark:bg-gray-600",
       label: "Unknown",
-      pulse: false,
     },
   };
 
@@ -31,9 +29,9 @@ export function HealthIndicator({ status, className, showLabel = false }: Health
     <div className={cn("flex items-center gap-2", className)}>
       <span
         className={cn(
-          "h-3 w-3 rounded-full",
+          "h-3 w-3 rounded-full transition-all",
           config.color,
-          config.pulse && "animate-pulse"
+          isAnimating && "animate-health-blink"
         )}
         data-testid={`health-indicator-${status}`}
         aria-label={config.label}
