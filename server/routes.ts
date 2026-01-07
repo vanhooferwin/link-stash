@@ -163,6 +163,23 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/bookmarks/:id/grid-position", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { gridRow, gridColumn } = req.body as { gridRow: number; gridColumn: number };
+      if (typeof gridRow !== "number" || typeof gridColumn !== "number") {
+        return res.status(400).json({ error: "gridRow and gridColumn must be numbers" });
+      }
+      const bookmark = await storage.updateBookmarkGridPosition(id, gridRow, gridColumn);
+      if (!bookmark) {
+        return res.status(404).json({ error: "Bookmark not found" });
+      }
+      res.json(bookmark);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update bookmark grid position" });
+    }
+  });
+
   app.post("/api/bookmarks/:id/health", async (req, res) => {
     try {
       const { id } = req.params;
@@ -333,6 +350,23 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Failed to reorder API calls" });
+    }
+  });
+
+  app.patch("/api/api-calls/:id/grid-position", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { gridRow, gridColumn } = req.body as { gridRow: number; gridColumn: number };
+      if (typeof gridRow !== "number" || typeof gridColumn !== "number") {
+        return res.status(400).json({ error: "gridRow and gridColumn must be numbers" });
+      }
+      const apiCall = await storage.updateApiCallGridPosition(id, gridRow, gridColumn);
+      if (!apiCall) {
+        return res.status(404).json({ error: "API call not found" });
+      }
+      res.json(apiCall);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update API call grid position" });
     }
   });
 
