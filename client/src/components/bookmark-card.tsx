@@ -140,12 +140,6 @@ export function BookmarkCard({
                 {bookmark.description}
               </p>
             )}
-            <p
-              className="text-xs font-mono text-muted-foreground mt-2 truncate"
-              data-testid={`text-bookmark-url-${bookmark.id}`}
-            >
-              {bookmark.url}
-            </p>
           </div>
         </div>
       </Card>
