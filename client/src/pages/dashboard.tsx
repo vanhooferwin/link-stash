@@ -116,11 +116,22 @@ export default function Dashboard() {
 
   const createBookmarkMutation = useMutation({
     mutationFn: (data: InsertBookmark) => apiRequest("POST", "/api/bookmarks", data),
-    onSuccess: () => {
+    onSuccess: async (response) => {
       queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
       setBookmarkModalOpen(false);
       setEditingBookmark(null);
       toast({ title: "Bookmark created successfully" });
+      
+      // Run health check immediately if enabled
+      const bookmark = response as Bookmark;
+      if (bookmark.healthCheckEnabled) {
+        try {
+          await apiRequest("POST", `/api/bookmarks/${bookmark.id}/health`);
+          queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+        } catch {
+          // Silently fail - health check will be visible in UI
+        }
+      }
     },
     onError: () => {
       toast({ title: "Failed to create bookmark", variant: "destructive" });
