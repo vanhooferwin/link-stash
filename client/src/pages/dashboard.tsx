@@ -155,7 +155,7 @@ export default function Dashboard() {
       toast({ title: "Bookmark created successfully" });
       
       // Run health check immediately if enabled
-      const bookmark = response as Bookmark;
+      const bookmark = response as BookmarkType;
       if (bookmark.healthCheckEnabled) {
         try {
           await apiRequest("POST", `/api/bookmarks/${bookmark.id}/health`);
