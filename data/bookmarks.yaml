@@ -25,11 +25,12 @@ bookmarks:
     description: Testopstelling OK-27
     url: http://10.74.27.11:3000
     icon: Monitor
-    color: blue
+    color: default
     categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
     healthCheckEnabled: true
     healthCheckConfig:
       expectedStatus: 200
+      checkSsl: false
     order: 0
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
