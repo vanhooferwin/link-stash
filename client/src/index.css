@@ -310,9 +310,9 @@
   animation: health-blink 0.6s ease-in-out;
 }
 
-/* Glass effect when background image is present - dark with 10px blur */
+/* Glass effect when background image is present - dark with 10px blur, 25% opacity */
 [data-has-bg="true"] [data-slot="sidebar-inner"] {
-  background-color: rgba(5, 5, 8, 0.85) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -323,7 +323,7 @@
 }
 
 [data-has-bg="true"] .glass-header {
-  background-color: rgba(5, 5, 8, 0.85) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -331,7 +331,7 @@
 
 /* Glass cards when background image is present */
 [data-has-bg="true"] .glass-card {
-  background-color: rgba(5, 5, 8, 0.85) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-color: rgba(255, 255, 255, 0.06) !important;
@@ -339,7 +339,7 @@
 
 /* Glass category headers when background image is present */
 .glass-category {
-  background-color: rgba(5, 5, 8, 0.85) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -349,7 +349,7 @@
 /* Glass effect for modals and dialogs */
 [data-has-bg="true"] [role="dialog"] > div:first-child,
 [data-has-bg="true"] [data-radix-dialog-content] {
-  background-color: rgba(5, 5, 8, 0.85) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -357,7 +357,7 @@
 
 /* Glass effect for form inputs in glass context */
 [data-has-bg="true"] .glass-input {
-  background-color: rgba(0, 0, 0, 0.4) !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-color: rgba(255, 255, 255, 0.08) !important;
@@ -365,7 +365,7 @@
 
 /* Glass effect for select dropdowns and popovers */
 [data-has-bg="true"] [data-radix-popper-content-wrapper] > div {
-  background-color: rgba(5, 5, 8, 0.85) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
