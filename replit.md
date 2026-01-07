@@ -26,8 +26,9 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Layer
 - **Schema Definition**: Zod schemas in `shared/schema.ts` for validation and type inference
-- **Current Storage**: In-memory storage implementation (`MemStorage` class) with interface for database migration
-- **Storage Pattern**: Repository pattern via `IStorage` interface enabling easy swap between memory and database
+- **Current Storage**: YAML file-based storage (`YamlStorage` class) persisting to `data/bookmarks.yaml`
+- **Storage Pattern**: Repository pattern via `IStorage` interface enabling easy swap between storage backends
+- **Data Directory**: Configurable via `DATA_DIR` environment variable, defaults to `./data`
 
 ## Features
 
