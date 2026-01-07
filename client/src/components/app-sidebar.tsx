@@ -1,6 +1,23 @@
 import { useState, useRef } from "react";
-import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark, Download, Upload } from "lucide-react";
+import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark, Download, Upload, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   Sidebar,
   SidebarContent,
@@ -29,13 +46,102 @@ interface AppSidebarProps {
   categories: Category[];
   selectedCategoryId: string | null;
   onSelectCategory: (categoryId: string | null) => void;
-  onCreateCategory: (data: { name: string; order: number }) => void;
-  onUpdateCategory: (id: string, data: { name: string; order: number }) => void;
+  onCreateCategory: (data: { name: string; order: number; columns: number }) => void;
+  onUpdateCategory: (id: string, data: { name: string; order: number; columns: number }) => void;
   onDeleteCategory: (id: string) => void;
+  onReorderCategories: (categoryIds: string[]) => void;
   isCreating?: boolean;
   isUpdating?: boolean;
   editMode?: boolean;
   hasBackgroundImage?: boolean;
+}
+
+interface SortableCategoryItemProps {
+  category: Category;
+  isActive: boolean;
+  editMode: boolean;
+  onSelect: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+function SortableCategoryItem({
+  category,
+  isActive,
+  editMode,
+  onSelect,
+  onEdit,
+  onDelete,
+}: SortableCategoryItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <SidebarMenuItem ref={setNodeRef} style={style}>
+      <div className="flex items-center w-full group/menu-item relative">
+        {editMode && (
+          <button
+            {...attributes}
+            {...listeners}
+            className="p-1 cursor-grab hover:bg-sidebar-accent rounded mr-1"
+            data-testid={`drag-handle-category-${category.id}`}
+          >
+            <GripVertical className="h-3 w-3 text-muted-foreground" />
+          </button>
+        )}
+        <SidebarMenuButton
+          onClick={onSelect}
+          isActive={isActive}
+          data-testid={`button-category-${category.id}`}
+          className="flex-1"
+        >
+          <Folder className="h-4 w-4" />
+          <span>{category.name}</span>
+        </SidebarMenuButton>
+        {editMode && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0"
+                data-testid={`button-category-menu-${category.id}`}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="right" align="start">
+              <DropdownMenuItem
+                onClick={onEdit}
+                data-testid={`button-edit-category-${category.id}`}
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={onDelete}
+                className="text-destructive focus:text-destructive"
+                data-testid={`button-delete-category-${category.id}`}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
+    </SidebarMenuItem>
+  );
 }
 
 export function AppSidebar({
@@ -45,6 +151,7 @@ export function AppSidebar({
   onCreateCategory,
   onUpdateCategory,
   onDeleteCategory,
+  onReorderCategories,
   isCreating = false,
   isUpdating = false,
   editMode = false,
@@ -122,7 +229,7 @@ export function AppSidebar({
     setCategoryModalOpen(true);
   };
 
-  const handleCategorySubmit = (data: { name: string; order: number }) => {
+  const handleCategorySubmit = (data: { name: string; order: number; columns: number }) => {
     if (editingCategory) {
       onUpdateCategory(editingCategory.id, data);
     } else {
@@ -130,6 +237,27 @@ export function AppSidebar({
     }
     setCategoryModalOpen(false);
     setEditingCategory(null);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = categories.findIndex((c) => c.id === active.id);
+      const newIndex = categories.findIndex((c) => c.id === over.id);
+      const newOrder = arrayMove(categories, oldIndex, newIndex);
+      onReorderCategories(newOrder.map((c) => c.id));
+    }
   };
 
   return (
@@ -176,47 +304,28 @@ export function AppSidebar({
                   </SidebarMenuButton>
                 </SidebarMenuItem>
 
-                {categories.map((category) => (
-                  <SidebarMenuItem key={category.id}>
-                    <SidebarMenuButton
-                      onClick={() => onSelectCategory(category.id)}
-                      isActive={selectedCategoryId === category.id}
-                      data-testid={`button-category-${category.id}`}
-                    >
-                      <Folder className="h-4 w-4" />
-                      <span>{category.name}</span>
-                    </SidebarMenuButton>
-                    {editMode && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            className="text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 peer-data-[size=default]/menu-button:top-1.5 group-data-[collapsible=icon]:hidden peer-data-[active=true]/menu-button:text-sidebar-accent-foreground group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0"
-                            data-testid={`button-category-menu-${category.id}`}
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="right" align="start">
-                          <DropdownMenuItem
-                            onClick={() => handleEditCategory(category)}
-                            data-testid={`button-edit-category-${category.id}`}
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => onDeleteCategory(category.id)}
-                            className="text-destructive focus:text-destructive"
-                            data-testid={`button-delete-category-${category.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </SidebarMenuItem>
-                ))}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={categories.map((c) => c.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {categories.map((category) => (
+                      <SortableCategoryItem
+                        key={category.id}
+                        category={category}
+                        isActive={selectedCategoryId === category.id}
+                        editMode={editMode}
+                        onSelect={() => onSelectCategory(category.id)}
+                        onEdit={() => handleEditCategory(category)}
+                        onDelete={() => onDeleteCategory(category.id)}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
