@@ -312,10 +312,10 @@
 
 /* Glass effect when background image is present */
 [data-has-bg="true"] [data-slot="sidebar-inner"] {
-  background-color: rgba(10, 10, 12, 0.45) !important;
+  background-color: rgba(10, 10, 12, 0.25) !important;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 [data-has-bg="true"] [data-slot="sidebar-container"] {
@@ -323,10 +323,10 @@
 }
 
 [data-has-bg="true"] .glass-header {
-  background-color: rgba(10, 10, 12, 0.45) !important;
+  background-color: rgba(10, 10, 12, 0.25) !important;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Glass cards when background image is present */
@@ -339,9 +339,34 @@
 
 /* Glass category headers when background image is present */
 .glass-category {
-  background-color: rgba(10, 10, 12, 0.35) !important;
+  background-color: rgba(10, 10, 12, 0.15) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-radius: 0.375rem;
+}
+
+/* Glass effect for modals and dialogs */
+[data-has-bg="true"] [role="dialog"] > div:first-child,
+[data-has-bg="true"] [data-radix-dialog-content] {
+  background-color: rgba(20, 20, 25, 0.75) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Glass effect for form inputs in glass context */
+[data-has-bg="true"] .glass-input {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Glass effect for select dropdowns and popovers */
+[data-has-bg="true"] [data-radix-popper-content-wrapper] > div {
+  background-color: rgba(20, 20, 25, 0.85) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
-  border-radius: 0.375rem;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
