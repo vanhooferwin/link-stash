@@ -21,7 +21,7 @@ bookmarks:
     order: 0
     id: ad857c46-d845-4ede-9ed9-63a1c21b728c
     healthStatus: online
-    lastHealthCheck: '2026-01-07T14:37:09.208Z'
+    lastHealthCheck: '2026-01-07T17:00:16.660Z'
     color: green
     healthCheckConfig:
       expectedStatus: 200
@@ -30,7 +30,7 @@ bookmarks:
   - name: OK-27
     description: Testopstelling OK-27
     url: http://10.74.27.11:3000
-    icon: Monitor
+    icon: Touchscreen
     color: blue
     categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
     healthCheckEnabled: true
@@ -40,7 +40,7 @@ bookmarks:
     order: 1
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T14:37:09.358Z'
+    lastHealthCheck: '2026-01-07T17:00:16.966Z'
     sslExpiryDays: null
   - name: JIRA
     description: Tickets & more
@@ -55,7 +55,7 @@ bookmarks:
     order: 1
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
     healthStatus: online
-    lastHealthCheck: '2026-01-07T14:37:10.038Z'
+    lastHealthCheck: '2026-01-07T17:00:17.916Z'
     sslExpiryDays: null
   - name: SharePoint
     description: ''
@@ -82,20 +82,23 @@ bookmarks:
     order: 2
     id: e36bce13-16db-4644-afee-b41d6c6900f9
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T16:50:54.115Z'
+    lastHealthCheck: '2026-01-07T17:00:18.217Z'
     sslExpiryDays: null
   - name: OK-3
     description: Touch
     url: http://10.74.26.5:3000
-    icon: Globe
+    icon: Touchscreen
     color: blue
     categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
-    healthCheckEnabled: false
+    healthCheckEnabled: true
     order: 0
     id: 7f691ed8-626b-481f-a095-ffdf91967917
-    healthStatus: unknown
-    lastHealthCheck: null
+    healthStatus: offline
+    lastHealthCheck: '2026-01-07T17:00:16.814Z'
     sslExpiryDays: null
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
 apiCalls: []
 users: []
 settings:

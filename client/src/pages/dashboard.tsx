@@ -322,13 +322,25 @@ export default function Dashboard() {
   });
 
   const updateBookmarkMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<InsertBookmark> }) =>
-      apiRequest("PATCH", `/api/bookmarks/${id}`, data),
-    onSuccess: () => {
+    mutationFn: async ({ id, data }: { id: string; data: Partial<InsertBookmark> }) => {
+      const response = await apiRequest("PATCH", `/api/bookmarks/${id}`, data);
+      return { id, bookmark: await response.json() as BookmarkType };
+    },
+    onSuccess: async ({ id, bookmark }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
       setBookmarkModalOpen(false);
       setEditingBookmark(null);
       toast({ title: "Bookmark updated successfully" });
+      
+      // Run health check immediately if enabled
+      if (bookmark.healthCheckEnabled) {
+        try {
+          await apiRequest("POST", `/api/bookmarks/${id}/health`);
+          queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+        } catch {
+          // Silently fail - health check will be visible in UI
+        }
+      }
     },
     onError: () => {
       toast({ title: "Failed to update bookmark", variant: "destructive" });
