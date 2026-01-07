@@ -50,6 +50,18 @@ bookmarks:
     healthStatus: online
     lastHealthCheck: '2026-01-07T12:16:22.539Z'
     sslExpiryDays: 89
+  - name: SharePoint
+    description: ''
+    url: https://mpluz-my.sharepoint.com/
+    icon: OneDrive
+    color: blue
+    categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
+    healthCheckEnabled: false
+    order: 0
+    id: ae871d60-d137-465d-b5e6-9e6526dd6929
+    healthStatus: unknown
+    lastHealthCheck: null
+    sslExpiryDays: null
 apiCalls:
   - name: Test API
     description: ''
