@@ -1,13 +1,25 @@
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface HealthIndicatorProps {
   status: "online" | "offline" | "unknown";
   className?: string;
   showLabel?: boolean;
   isAnimating?: boolean;
+  tooltipMessage?: string;
 }
 
-export function HealthIndicator({ status, className, showLabel = false, isAnimating = false }: HealthIndicatorProps) {
+export function HealthIndicator({ 
+  status, 
+  className, 
+  showLabel = false, 
+  isAnimating = false,
+  tooltipMessage 
+}: HealthIndicatorProps) {
   const statusConfig = {
     online: {
       color: "bg-emerald-500",
@@ -25,7 +37,7 @@ export function HealthIndicator({ status, className, showLabel = false, isAnimat
 
   const config = statusConfig[status];
 
-  return (
+  const indicator = (
     <div className={cn("flex items-center gap-2", className)}>
       <span
         className={cn(
@@ -41,4 +53,22 @@ export function HealthIndicator({ status, className, showLabel = false, isAnimat
       )}
     </div>
   );
+
+  // If there's a tooltip message (non-green status), wrap in tooltip
+  if (tooltipMessage) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-help">
+            {indicator}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          {tooltipMessage}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return indicator;
 }
