@@ -22,6 +22,7 @@ import { ApiCallCard } from "@/components/api-call-card";
 import { BookmarkModal } from "@/components/bookmark-modal";
 import { ApiCallModal } from "@/components/api-call-modal";
 import { ResponseModal } from "@/components/response-modal";
+import { CommandPalette } from "@/components/command-palette";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ export default function Dashboard() {
   const [showBgInput, setShowBgInput] = useState(false);
   const [bgInputValue, setBgInputValue] = useState("");
   const [isRefreshingHealth, setIsRefreshingHealth] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -277,20 +279,36 @@ export default function Dashboard() {
   const filteredBookmarks = bookmarks.filter((bookmark) => {
     const matchesCategory = !selectedCategoryId || bookmark.categoryId === selectedCategoryId;
     const matchesSearch = !searchQuery || 
-      bookmark.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bookmark.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      bookmark.url.toLowerCase().includes(searchQuery.toLowerCase());
+      bookmark.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   const filteredApiCalls = apiCalls.filter((apiCall) => {
     const matchesCategory = !selectedCategoryId || apiCall.categoryId === selectedCategoryId;
     const matchesSearch = !searchQuery ||
-      apiCall.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      apiCall.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      apiCall.url.toLowerCase().includes(searchQuery.toLowerCase());
+      apiCall.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const handleOpenBookmark = (bookmark: BookmarkType) => {
+    window.open(bookmark.url, "_blank");
+  };
+
+  const handleExecuteApiCallFromPalette = (apiCall: ApiCall) => {
+    executeApiCallMutation.mutate(apiCall);
+  };
 
   const toggleCategory = (categoryId: string) => {
     setCollapsedCategories(prev => {
@@ -627,6 +645,16 @@ export default function Dashboard() {
         apiCall={currentResponse?.apiCall || null}
         response={currentResponse?.response || null}
         error={currentResponse?.error}
+      />
+
+      <CommandPalette
+        open={commandPaletteOpen}
+        onOpenChange={setCommandPaletteOpen}
+        bookmarks={bookmarks}
+        apiCalls={apiCalls}
+        categories={categories}
+        onOpenBookmark={handleOpenBookmark}
+        onExecuteApiCall={handleExecuteApiCallFromPalette}
       />
     </SidebarProvider>
   );
