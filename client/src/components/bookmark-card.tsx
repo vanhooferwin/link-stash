@@ -8,8 +8,14 @@ import {
 } from "@/components/ui/tooltip";
 import { DynamicIcon } from "./dynamic-icon";
 import { HealthIndicator } from "./health-indicator";
-import type { Bookmark } from "@shared/schema";
+import { CARD_COLORS, type Bookmark } from "@shared/schema";
 import { cn } from "@/lib/utils";
+
+function getColorClasses(colorId: string) {
+  const color = CARD_COLORS.find(c => c.id === colorId);
+  if (!color || colorId === "default") return { bg: "", border: "" };
+  return { bg: color.bg, border: color.border };
+}
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -48,6 +54,8 @@ export function BookmarkCard({
     onHealthCheck(bookmark.id);
   };
 
+  const colorClasses = getColorClasses(bookmark.color || "default");
+
   return (
     <a
       href={bookmark.url}
@@ -57,7 +65,11 @@ export function BookmarkCard({
       data-testid={`bookmark-link-${bookmark.id}`}
     >
       <Card
-        className="group relative p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover-elevate active-elevate-2"
+        className={cn(
+          "group relative p-4 cursor-pointer transition-all duration-200 hover:shadow-md hover-elevate active-elevate-2",
+          colorClasses.bg,
+          colorClasses.border && `border ${colorClasses.border}`
+        )}
         data-testid={`bookmark-card-${bookmark.id}`}
       >
         {editMode && (

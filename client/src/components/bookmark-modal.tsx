@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IconPicker } from "./icon-picker";
+import { ColorPicker } from "./color-picker";
 import type { Bookmark, Category } from "@shared/schema";
 
 const formSchema = z.object({
@@ -36,6 +37,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   url: z.string().url("Must be a valid URL"),
   icon: z.string().default("Globe"),
+  color: z.string().default("default"),
   categoryId: z.string().min(1, "Category is required"),
   healthCheckEnabled: z.boolean().default(false),
   order: z.number().default(0),
@@ -67,6 +69,7 @@ export function BookmarkModal({
       description: "",
       url: "",
       icon: "Globe",
+      color: "default",
       categoryId: categories[0]?.id || "",
       healthCheckEnabled: false,
       order: 0,
@@ -80,6 +83,7 @@ export function BookmarkModal({
         description: bookmark.description || "",
         url: bookmark.url,
         icon: bookmark.icon,
+        color: bookmark.color || "default",
         categoryId: bookmark.categoryId,
         healthCheckEnabled: bookmark.healthCheckEnabled,
         order: bookmark.order,
@@ -90,6 +94,7 @@ export function BookmarkModal({
         description: "",
         url: "",
         icon: "Globe",
+        color: "default",
         categoryId: categories[0]?.id || "",
         healthCheckEnabled: false,
         order: 0,
@@ -211,6 +216,20 @@ export function BookmarkModal({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Card Style</FormLabel>
+                  <FormControl>
+                    <ColorPicker value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
