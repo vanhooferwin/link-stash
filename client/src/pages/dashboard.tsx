@@ -316,7 +316,7 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider style={sidebarStyle as React.CSSProperties}>
-      <div className="flex h-screen w-full relative">
+      <div className="flex h-screen w-full relative" data-has-bg={backgroundImageUrl ? "true" : "false"}>
         {backgroundImageUrl && (
           <div
             className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
