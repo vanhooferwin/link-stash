@@ -2,6 +2,19 @@ categories:
   - id: f4fac5cc-6826-4a45-8e12-442fd109a749
     name: General
     order: 0
-bookmarks: []
+  - name: Test opstelling
+    order: 0
+    id: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+bookmarks:
+  - name: BitBucket
+    description: Mpluz* version control
+    url: https://bitbucket.org/mpluz/workspace/overview/
+    icon: Wrench
+    categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
+    healthCheckEnabled: true
+    order: 0
+    id: ad857c46-d845-4ede-9ed9-63a1c21b728c
+    healthStatus: online
+    lastHealthCheck: '2026-01-07T09:25:52.757Z'
 apiCalls: []
 users: []
