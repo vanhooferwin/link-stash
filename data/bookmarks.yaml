@@ -42,7 +42,7 @@ bookmarks:
     order: 2
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:54.920Z'
+    lastHealthCheck: '2026-01-07T19:18:24.671Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 1
@@ -90,7 +90,7 @@ bookmarks:
     order: 4
     id: e36bce13-16db-4644-afee-b41d6c6900f9
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:55.263Z'
+    lastHealthCheck: '2026-01-07T19:18:24.993Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 2
@@ -104,7 +104,7 @@ bookmarks:
     order: 0
     id: 7f691ed8-626b-481f-a095-ffdf91967917
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:51.209Z'
+    lastHealthCheck: '2026-01-07T19:18:21.038Z'
     sslExpiryDays: null
     healthCheckConfig:
       expectedStatus: 200
@@ -124,7 +124,7 @@ bookmarks:
     order: 5
     id: 092ab251-7708-4ab7-8649-7ea348188b80
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:55.440Z'
+    lastHealthCheck: '2026-01-07T19:18:25.153Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 2
@@ -141,7 +141,7 @@ bookmarks:
     order: 3
     id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:55.087Z'
+    lastHealthCheck: '2026-01-07T19:18:24.832Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 1
@@ -172,7 +172,7 @@ bookmarks:
     order: 1
     id: 6b1ceac8-0b82-456f-8cbd-f4fcc05305e7
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:54.748Z'
+    lastHealthCheck: '2026-01-07T19:18:24.506Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 0
@@ -191,7 +191,7 @@ bookmarks:
     gridColumn: 4
     id: 77d2ef54-9239-4b41-a56d-46f2925e3d4d
     healthStatus: online
-    lastHealthCheck: '2026-01-07T19:16:54.408Z'
+    lastHealthCheck: '2026-01-07T19:18:24.195Z'
     sslExpiryDays: null
   - name: Proxmox
     description: Virtualisatie platform
@@ -208,7 +208,7 @@ bookmarks:
     gridColumn: 0
     id: 84d6bece-184a-4705-bdf6-2bc33dfa20c5
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T19:16:54.584Z'
+    lastHealthCheck: '2026-01-07T19:18:24.348Z'
     sslExpiryDays: null
 apiCalls: []
 users: []
