@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark } from "lucide-react";
+import { useState, useRef } from "react";
+import { Folder, Plus, Edit, Trash2, MoreHorizontal, Bookmark, Download, Upload } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -20,6 +20,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CategoryModal } from "./category-modal";
+import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 import type { Category } from "@shared/schema";
 
 interface AppSidebarProps {
@@ -47,6 +49,65 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
+  const handleExport = async () => {
+    try {
+      const response = await fetch("/api/config/export");
+      if (!response.ok) throw new Error("Export failed");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `bookmarks-backup-${new Date().toISOString().split("T")[0]}.yaml`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast({ title: "Configuration exported successfully" });
+    } catch {
+      toast({ title: "Failed to export configuration", variant: "destructive" });
+    }
+  };
+
+  const handleImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const response = await fetch("/api/config/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ yaml: text }),
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Import failed");
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/api-calls"] });
+      toast({ title: "Configuration imported successfully" });
+    } catch (err) {
+      toast({ 
+        title: "Failed to import configuration", 
+        description: err instanceof Error ? err.message : "Invalid file",
+        variant: "destructive" 
+      });
+    }
+    
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleAddCategory = () => {
     setEditingCategory(null);
@@ -159,7 +220,37 @@ export function AppSidebar({
 
         </SidebarContent>
 
-        <SidebarFooter className="p-4 border-t border-sidebar-border">
+        <SidebarFooter className="p-4 border-t border-sidebar-border space-y-3">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={handleExport}
+              data-testid="button-export-config"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={handleImport}
+              data-testid="button-import-config"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Import
+            </Button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".yaml,.yml"
+            className="hidden"
+            onChange={handleFileChange}
+            data-testid="input-import-file"
+          />
           <p className="text-xs text-muted-foreground text-center">
             Bookmark Dashboard v1.0
           </p>

@@ -34,6 +34,9 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+
+  exportData(): Promise<string>;
+  importData(yamlContent: string): Promise<void>;
 }
 
 interface YamlData {
@@ -271,6 +274,52 @@ export class YamlStorage implements IStorage {
     this.users.set(id, user);
     this.saveToFile();
     return user;
+  }
+
+  async exportData(): Promise<string> {
+    const data = {
+      categories: Array.from(this.categories.values()),
+      bookmarks: Array.from(this.bookmarks.values()),
+      apiCalls: Array.from(this.apiCalls.values()),
+    };
+    return yaml.dump(data, {
+      indent: 2,
+      lineWidth: -1,
+      noRefs: true,
+      sortKeys: false,
+    });
+  }
+
+  async importData(yamlContent: string): Promise<void> {
+    const data = yaml.load(yamlContent) as Partial<YamlData> | null;
+    if (!data) {
+      throw new Error("Invalid YAML content");
+    }
+
+    this.categories.clear();
+    this.bookmarks.clear();
+    this.apiCalls.clear();
+
+    if (data.categories) {
+      data.categories.forEach(cat => this.categories.set(cat.id, cat));
+    }
+    if (data.bookmarks) {
+      data.bookmarks.forEach(bm => this.bookmarks.set(bm.id, bm));
+    }
+    if (data.apiCalls) {
+      data.apiCalls.forEach(ac => this.apiCalls.set(ac.id, ac));
+    }
+
+    if (this.categories.size === 0) {
+      const defaultCategory: Category = {
+        id: randomUUID(),
+        name: "General",
+        order: 0,
+      };
+      this.categories.set(defaultCategory.id, defaultCategory);
+    }
+
+    this.saveToFile();
   }
 }
 
