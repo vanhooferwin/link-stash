@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2 } from "lucide-react";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [currentResponse, setCurrentResponse] = useState<{ apiCall: ApiCall; response: ApiResponse | null; error: string | null } | null>(null);
   const [checkingHealthId, setCheckingHealthId] = useState<string | null>(null);
   const [executingApiCallId, setExecutingApiCallId] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -264,6 +265,7 @@ export default function Dashboard() {
           onDeleteCategory={(id) => deleteCategoryMutation.mutate(id)}
           isCreating={createCategoryMutation.isPending}
           isUpdating={updateCategoryMutation.isPending}
+          editMode={editMode}
         />
 
         <div className="flex flex-col flex-1 min-w-0">
@@ -284,24 +286,34 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button data-testid="button-add-new">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add New
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleAddBookmark} data-testid="menu-add-bookmark">
-                    <Bookmark className="h-4 w-4 mr-2" />
-                    Add Bookmark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleAddApiCall} data-testid="menu-add-api-call">
-                    <Zap className="h-4 w-4 mr-2" />
-                    Add API Call
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {editMode && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button data-testid="button-add-new">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add New
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleAddBookmark} data-testid="menu-add-bookmark">
+                      <Bookmark className="h-4 w-4 mr-2" />
+                      Add Bookmark
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleAddApiCall} data-testid="menu-add-api-call">
+                      <Zap className="h-4 w-4 mr-2" />
+                      Add API Call
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              <Button
+                variant={editMode ? "default" : "outline"}
+                size="icon"
+                onClick={() => setEditMode(!editMode)}
+                data-testid="button-toggle-edit-mode"
+              >
+                {editMode ? <Eye className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
+              </Button>
               <ThemeToggle />
             </div>
           </header>
@@ -355,6 +367,7 @@ export default function Dashboard() {
                           onDelete={(id) => deleteBookmarkMutation.mutate(id)}
                           onHealthCheck={(id) => healthCheckMutation.mutate(id)}
                           isCheckingHealth={checkingHealthId === bookmark.id}
+                          editMode={editMode}
                         />
                       ))}
                     </div>
@@ -378,6 +391,7 @@ export default function Dashboard() {
                           onEdit={handleEditApiCall}
                           onDelete={(id) => deleteApiCallMutation.mutate(id)}
                           onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
+                          editMode={editMode}
                           isExecuting={executingApiCallId === apiCall.id}
                         />
                       ))}

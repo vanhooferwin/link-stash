@@ -17,6 +17,7 @@ interface ApiCallCardProps {
   onDelete: (id: string) => void;
   onExecute: (apiCall: ApiCall) => void;
   isExecuting?: boolean;
+  editMode?: boolean;
 }
 
 export function ApiCallCard({
@@ -25,6 +26,7 @@ export function ApiCallCard({
   onDelete,
   onExecute,
   isExecuting = false,
+  editMode = false,
 }: ApiCallCardProps) {
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -46,36 +48,38 @@ export function ApiCallCard({
       className="group relative p-4 border-l-4 border-l-accent transition-all duration-200 hover:shadow-md hover-elevate"
       data-testid={`api-call-card-${apiCall.id}`}
     >
-      <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7"
-              onClick={handleEdit}
-              data-testid={`button-edit-api-call-${apiCall.id}`}
-            >
-              <Edit className="h-3.5 w-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Edit</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 text-destructive"
-              onClick={handleDelete}
-              data-testid={`button-delete-api-call-${apiCall.id}`}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Delete</TooltipContent>
-        </Tooltip>
-      </div>
+      {editMode && (
+        <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleEdit}
+                data-testid={`button-edit-api-call-${apiCall.id}`}
+              >
+                <Edit className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Edit</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-destructive"
+                onClick={handleDelete}
+                data-testid={`button-delete-api-call-${apiCall.id}`}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Delete</TooltipContent>
+          </Tooltip>
+        </div>
+      )}
 
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 p-2 bg-accent/50 rounded-lg">
