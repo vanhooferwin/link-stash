@@ -418,6 +418,32 @@ export async function registerRoutes(
     }
   });
 
+  // Export configuration
+  app.get("/api/config/export", async (req, res) => {
+    try {
+      const yamlContent = await storage.exportData();
+      res.setHeader("Content-Type", "application/x-yaml");
+      res.setHeader("Content-Disposition", "attachment; filename=bookmarks-backup.yaml");
+      res.send(yamlContent);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to export configuration" });
+    }
+  });
+
+  // Import configuration
+  app.post("/api/config/import", async (req, res) => {
+    try {
+      const yamlContent = req.body.yaml;
+      if (!yamlContent || typeof yamlContent !== "string") {
+        return res.status(400).json({ error: "YAML content is required" });
+      }
+      await storage.importData(yamlContent);
+      res.json({ success: true, message: "Configuration imported successfully" });
+    } catch (error) {
+      res.status(400).json({ error: error instanceof Error ? error.message : "Failed to import configuration" });
+    }
+  });
+
   // Health check ping endpoint
   app.get("/api/health/ping", async (req, res) => {
     const { url } = req.query;
