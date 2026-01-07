@@ -56,7 +56,7 @@ export function ApiCallCard({
   return (
     <Card
       className={cn(
-        "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate",
+        "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate min-h-[88px]",
         hasBackgroundImage && !colorClasses.bg ? "glass-card" : colorClasses.bg,
         colorClasses.border && `border ${colorClasses.border}`
       )}
