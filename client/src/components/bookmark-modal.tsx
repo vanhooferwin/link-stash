@@ -391,7 +391,13 @@ export function BookmarkModal({
                     control={form.control}
                     name="healthCheckConfig.checkSsl"
                     render={({ field }) => (
-                      <FormItem className="flex items-center gap-2 pt-2">
+                      <FormItem className="flex items-center justify-between rounded-lg border p-3 pt-2">
+                        <div className="space-y-0.5">
+                          <FormLabel className="!mt-0">Check SSL Certificate</FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Verify the SSL certificate is valid and not expired
+                          </p>
+                        </div>
                         <FormControl>
                           <Switch
                             checked={field.value}
@@ -399,12 +405,6 @@ export function BookmarkModal({
                             data-testid="switch-check-ssl"
                           />
                         </FormControl>
-                        <div className="space-y-0.5">
-                          <FormLabel className="!mt-0">Check SSL Certificate</FormLabel>
-                          <p className="text-xs text-muted-foreground">
-                            Verify the SSL certificate is valid and not expired
-                          </p>
-                        </div>
                       </FormItem>
                     )}
                   />

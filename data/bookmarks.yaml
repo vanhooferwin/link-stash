@@ -33,6 +33,21 @@ bookmarks:
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: unknown
     lastHealthCheck: null
+  - name: SiteOn
+    description: Place to be
+    url: https://www.siteon.nl
+    icon: Globe
+    color: blue
+    categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: true
+    order: 0
+    id: c8a696c1-7253-44dd-b4eb-34d645988c08
+    healthStatus: unknown
+    lastHealthCheck: null
+    sslExpiryDays: null
 apiCalls:
   - name: Test API
     description: ''
