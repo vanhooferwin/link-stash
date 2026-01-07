@@ -2,7 +2,25 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
+  content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}", "./shared/**/*.ts"],
+  safelist: [
+    "bg-blue-50", "dark:bg-blue-950/30", "border-blue-200", "dark:border-blue-800",
+    "bg-emerald-50", "dark:bg-emerald-950/30", "border-emerald-200", "dark:border-emerald-800",
+    "bg-purple-50", "dark:bg-purple-950/30", "border-purple-200", "dark:border-purple-800",
+    "bg-orange-50", "dark:bg-orange-950/30", "border-orange-200", "dark:border-orange-800",
+    "bg-pink-50", "dark:bg-pink-950/30", "border-pink-200", "dark:border-pink-800",
+    "bg-cyan-50", "dark:bg-cyan-950/30", "border-cyan-200", "dark:border-cyan-800",
+    "bg-yellow-50", "dark:bg-yellow-950/30", "border-yellow-200", "dark:border-yellow-800",
+    "bg-red-50", "dark:bg-red-950/30", "border-red-200", "dark:border-red-800",
+    "bg-blue-100", "dark:bg-blue-900", "border-blue-300", "dark:border-blue-700",
+    "bg-emerald-100", "dark:bg-emerald-900", "border-emerald-300", "dark:border-emerald-700",
+    "bg-purple-100", "dark:bg-purple-900", "border-purple-300", "dark:border-purple-700",
+    "bg-orange-100", "dark:bg-orange-900", "border-orange-300", "dark:border-orange-700",
+    "bg-pink-100", "dark:bg-pink-900", "border-pink-300", "dark:border-pink-700",
+    "bg-cyan-100", "dark:bg-cyan-900", "border-cyan-300", "dark:border-cyan-700",
+    "bg-yellow-100", "dark:bg-yellow-900", "border-yellow-300", "dark:border-yellow-700",
+    "bg-red-100", "dark:bg-red-900", "border-red-300", "dark:border-red-700",
+  ],
   theme: {
     extend: {
       borderRadius: {
