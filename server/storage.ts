@@ -2,7 +2,8 @@ import {
   type Category, type InsertCategory,
   type Bookmark, type InsertBookmark,
   type ApiCall, type InsertApiCall,
-  type User, type InsertUser
+  type User, type InsertUser,
+  type Settings
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import * as fs from "fs";
@@ -37,6 +38,9 @@ export interface IStorage {
 
   exportData(): Promise<string>;
   importData(yamlContent: string): Promise<void>;
+
+  getSettings(): Promise<Settings>;
+  updateSettings(settings: Partial<Settings>): Promise<Settings>;
 }
 
 interface YamlData {
@@ -44,6 +48,7 @@ interface YamlData {
   bookmarks: Bookmark[];
   apiCalls: ApiCall[];
   users: User[];
+  settings?: Settings;
 }
 
 const DATA_DIR = process.env.DATA_DIR || "./data";
@@ -54,12 +59,14 @@ export class YamlStorage implements IStorage {
   private bookmarks: Map<string, Bookmark>;
   private apiCalls: Map<string, ApiCall>;
   private users: Map<string, User>;
+  private settings: Settings;
 
   constructor() {
     this.categories = new Map();
     this.bookmarks = new Map();
     this.apiCalls = new Map();
     this.users = new Map();
+    this.settings = {};
     this.loadFromFile();
   }
 
@@ -85,6 +92,9 @@ export class YamlStorage implements IStorage {
           }
           if (data.users) {
             data.users.forEach(user => this.users.set(user.id, user));
+          }
+          if (data.settings) {
+            this.settings = data.settings;
           }
         }
       }
@@ -120,6 +130,7 @@ export class YamlStorage implements IStorage {
         bookmarks: Array.from(this.bookmarks.values()),
         apiCalls: Array.from(this.apiCalls.values()),
         users: Array.from(this.users.values()),
+        settings: this.settings,
       };
 
       const yamlContent = yaml.dump(data, {
@@ -320,6 +331,16 @@ export class YamlStorage implements IStorage {
     }
 
     this.saveToFile();
+  }
+
+  async getSettings(): Promise<Settings> {
+    return this.settings;
+  }
+
+  async updateSettings(updates: Partial<Settings>): Promise<Settings> {
+    this.settings = { ...this.settings, ...updates };
+    this.saveToFile();
+    return this.settings;
   }
 }
 
