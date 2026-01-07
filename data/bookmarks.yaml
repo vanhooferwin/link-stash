@@ -32,5 +32,15 @@ bookmarks:
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: unknown
     lastHealthCheck: null
-apiCalls: []
+apiCalls:
+  - name: Test API
+    description: ''
+    url: https://jsonplaceholder.typicode.com/todos/1
+    method: GET
+    headers: {}
+    body: ''
+    categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
+    icon: Zap
+    order: 0
+    id: be4b8662-f146-4e04-a3ff-eb2f8b25d77c
 users: []

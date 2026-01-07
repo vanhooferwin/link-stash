@@ -17,9 +17,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -28,7 +34,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { IconPicker } from "./icon-picker";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { ApiCall, Category, HttpMethod } from "@shared/schema";
 import { HTTP_METHODS } from "@shared/schema";
 
@@ -42,6 +49,12 @@ const formSchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   icon: z.string().default("Zap"),
   order: z.number().default(0),
+  responseValidationEnabled: z.boolean().default(false),
+  responseValidationConfig: z.object({
+    expectedStatus: z.number().default(200),
+    jsonKey: z.string().optional(),
+    jsonValue: z.string().optional(),
+  }).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,6 +77,7 @@ export function ApiCallModal({
   isPending = false,
 }: ApiCallModalProps) {
   const [headers, setHeaders] = useState<Array<{ key: string; value: string }>>([]);
+  const [validationOpen, setValidationOpen] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,11 +91,18 @@ export function ApiCallModal({
       categoryId: categories[0]?.id || "",
       icon: "Zap",
       order: 0,
+      responseValidationEnabled: false,
+      responseValidationConfig: {
+        expectedStatus: 200,
+        jsonKey: "",
+        jsonValue: "",
+      },
     },
   });
 
   const method = form.watch("method");
   const showBody = method !== "GET";
+  const responseValidationEnabled = form.watch("responseValidationEnabled");
 
   useEffect(() => {
     if (apiCall) {
@@ -90,6 +111,7 @@ export function ApiCallModal({
         value,
       }));
       setHeaders(headerEntries.length > 0 ? headerEntries : []);
+      setValidationOpen(apiCall.responseValidationEnabled || false);
       form.reset({
         name: apiCall.name,
         description: apiCall.description || "",
@@ -100,9 +122,16 @@ export function ApiCallModal({
         categoryId: apiCall.categoryId,
         icon: apiCall.icon,
         order: apiCall.order,
+        responseValidationEnabled: apiCall.responseValidationEnabled || false,
+        responseValidationConfig: {
+          expectedStatus: apiCall.responseValidationConfig?.expectedStatus || 200,
+          jsonKey: apiCall.responseValidationConfig?.jsonKey || "",
+          jsonValue: apiCall.responseValidationConfig?.jsonValue || "",
+        },
       });
     } else {
       setHeaders([]);
+      setValidationOpen(false);
       form.reset({
         name: "",
         description: "",
@@ -113,6 +142,12 @@ export function ApiCallModal({
         categoryId: categories[0]?.id || "",
         icon: "Zap",
         order: 0,
+        responseValidationEnabled: false,
+        responseValidationConfig: {
+          expectedStatus: 200,
+          jsonKey: "",
+          jsonValue: "",
+        },
       });
     }
   }, [apiCall, categories, form]);
@@ -348,6 +383,96 @@ export function ApiCallModal({
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="responseValidationEnabled"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      data-testid="checkbox-response-validation"
+                    />
+                  </FormControl>
+                  <FormLabel className="!mt-0 cursor-pointer">
+                    Enable response validation (show OK/FAILED toast)
+                  </FormLabel>
+                </FormItem>
+              )}
+            />
+
+            {responseValidationEnabled && (
+              <Collapsible open={validationOpen} onOpenChange={setValidationOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full justify-between p-2 h-auto text-sm text-muted-foreground"
+                    data-testid="button-toggle-validation-options"
+                  >
+                    <span>Validation Options</span>
+                    <ChevronDown className={cn("h-4 w-4 transition-transform", !validationOpen && "-rotate-90")} />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-3 pt-2">
+                  <FormField
+                    control={form.control}
+                    name="responseValidationConfig.expectedStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Expected Status Code</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="200"
+                            {...field}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 200)}
+                            data-testid="input-expected-status"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="responseValidationConfig.jsonKey"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>JSON Key (optional)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., status or data.success"
+                            {...field}
+                            data-testid="input-json-key"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="responseValidationConfig.jsonValue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Expected JSON Value (optional)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., ok or true"
+                            {...field}
+                            data-testid="input-json-value"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             <DialogFooter className="gap-2">
               <Button
