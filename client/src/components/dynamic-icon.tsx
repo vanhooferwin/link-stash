@@ -20,20 +20,6 @@ import {
 } from "react-icons/si";
 import { cn } from "@/lib/utils";
 
-// Custom Barco logo icon - stylized "B" matching their brand
-function BarcoIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M6 3h7c2.76 0 5 1.79 5 4 0 1.48-.81 2.77-2 3.46.74.46 1.36 1.1 1.78 1.86.42.76.66 1.62.72 2.5.06.88-.06 1.77-.35 2.6-.29.83-.74 1.58-1.32 2.21-.58.63-1.28 1.12-2.05 1.45-.77.33-1.6.5-2.43.5H6V3zm3 8h4c1.1 0 2-.9 2-2s-.9-2-2-2H9v4zm0 7h4.35c.53 0 1.04-.1 1.52-.3.48-.2.91-.49 1.26-.85.35-.36.63-.79.81-1.26.18-.47.27-.98.24-1.49-.03-.51-.16-1-.38-1.45-.22-.45-.53-.85-.91-1.17-.38-.32-.82-.56-1.29-.7-.47-.14-.96-.18-1.45-.12H9v7.34z" />
-    </svg>
-  );
-}
-
 interface DynamicIconProps {
   name: string;
   className?: string;
@@ -289,7 +275,7 @@ export function DynamicIcon({ name, className }: DynamicIconProps) {
     Touchscreen: LucideIcons.MonitorSmartphone,
     Nas: LucideIcons.HardDrive,
     ServerStack: LucideIcons.Server,
-    Barco: BarcoIcon,
+    Barco: LucideIcons.MonitorPlay,
     Presentation: LucideIcons.Presentation,
     Projector: LucideIcons.Projector,
     MonitorPlay: LucideIcons.MonitorPlay,
