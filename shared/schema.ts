@@ -96,10 +96,11 @@ export const bookmarkSchema = z.object({
   healthCheckConfig: healthCheckConfigSchema.optional(),
   healthStatus: z.enum(["online", "offline", "unknown"]).default("unknown"),
   lastHealthCheck: z.string().nullable().default(null),
+  sslExpiryDays: z.number().nullable().default(null),
   order: z.number().default(0),
 });
 
-export const insertBookmarkSchema = bookmarkSchema.omit({ id: true, healthStatus: true, lastHealthCheck: true });
+export const insertBookmarkSchema = bookmarkSchema.omit({ id: true, healthStatus: true, lastHealthCheck: true, sslExpiryDays: true });
 export type Bookmark = z.infer<typeof bookmarkSchema>;
 export type InsertBookmark = z.infer<typeof insertBookmarkSchema>;
 
