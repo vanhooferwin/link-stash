@@ -1,4 +1,4 @@
-import { ExternalLink, Edit, Trash2, RefreshCw } from "lucide-react";
+import { Edit, Trash2, RefreshCw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -135,15 +135,12 @@ export function BookmarkCard({
             <DynamicIcon name={bookmark.icon} className="h-6 w-6 text-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3
-                className="font-semibold text-base truncate"
-                data-testid={`text-bookmark-name-${bookmark.id}`}
-              >
-                {bookmark.name}
-              </h3>
-              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            </div>
+            <h3
+              className="font-semibold text-base truncate"
+              data-testid={`text-bookmark-name-${bookmark.id}`}
+            >
+              {bookmark.name}
+            </h3>
             {bookmark.description && (
               <p
                 className="text-sm text-muted-foreground mt-1 line-clamp-2"
