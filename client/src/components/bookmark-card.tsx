@@ -1,4 +1,4 @@
-import { Edit, Trash2, RefreshCw } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,6 @@ interface BookmarkCardProps {
   bookmark: Bookmark;
   onEdit: (bookmark: Bookmark) => void;
   onDelete: (id: string) => void;
-  onHealthCheck: (id: string) => void;
-  isCheckingHealth?: boolean;
   editMode?: boolean;
   isHealthAnimating?: boolean;
 }
@@ -31,8 +29,6 @@ export function BookmarkCard({
   bookmark,
   onEdit,
   onDelete,
-  onHealthCheck,
-  isCheckingHealth = false,
   editMode = false,
   isHealthAnimating = false,
 }: BookmarkCardProps) {
@@ -46,12 +42,6 @@ export function BookmarkCard({
     e.preventDefault();
     e.stopPropagation();
     onDelete(bookmark.id);
-  };
-
-  const handleHealthCheck = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onHealthCheck(bookmark.id);
   };
 
   const colorClasses = getColorClasses(bookmark.color || "default");
@@ -74,25 +64,6 @@ export function BookmarkCard({
       >
         {editMode && (
           <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-            {bookmark.healthCheckEnabled && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={handleHealthCheck}
-                    disabled={isCheckingHealth}
-                    data-testid={`button-health-check-${bookmark.id}`}
-                  >
-                    <RefreshCw
-                      className={cn("h-3.5 w-3.5", isCheckingHealth && "animate-spin")}
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Check health</TooltipContent>
-              </Tooltip>
-            )}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button

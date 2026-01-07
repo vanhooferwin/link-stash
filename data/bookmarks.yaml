@@ -16,6 +16,8 @@ bookmarks:
     id: ad857c46-d845-4ede-9ed9-63a1c21b728c
     healthStatus: online
     lastHealthCheck: '2026-01-07T09:25:52.757Z'
-    color: purple
+    color: green
+    healthCheckConfig:
+      expectedStatus: 200
 apiCalls: []
 users: []
