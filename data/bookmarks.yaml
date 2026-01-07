@@ -37,7 +37,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 1
+    order: 2
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:26:03.745Z'
@@ -79,7 +79,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 2
+    order: 4
     id: e36bce13-16db-4644-afee-b41d6c6900f9
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:00:18.217Z'
@@ -109,7 +109,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 3
+    order: 5
     id: 092ab251-7708-4ab7-8649-7ea348188b80
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:26:34.672Z'
@@ -124,7 +124,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 0
+    order: 3
     id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:32:20.987Z'
@@ -140,6 +140,21 @@ bookmarks:
     id: 69d70a67-d0e5-42b7-94fa-c4039324c920
     healthStatus: unknown
     lastHealthCheck: null
+    sslExpiryDays: null
+  - name: OK-3
+    description: NMS
+    url: https://10.74.26.133:8443/nms
+    icon: Circuit
+    color: yellow
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+    order: 1
+    id: 6b1ceac8-0b82-456f-8cbd-f4fcc05305e7
+    healthStatus: offline
+    lastHealthCheck: '2026-01-07T17:55:13.779Z'
     sslExpiryDays: null
 apiCalls: []
 users: []
