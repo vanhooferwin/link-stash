@@ -14,6 +14,27 @@ import { cn } from "@/lib/utils";
 
 const SSL_WARNING_THRESHOLD = 30; // Days before expiry to show warning
 
+function getHealthTooltipMessage(bookmark: Bookmark): string | undefined {
+  // No tooltip for healthy (green) status
+  if (bookmark.healthStatus === "online") {
+    // Check if SSL is expiring soon
+    if (bookmark.sslExpiryDays !== null && bookmark.sslExpiryDays <= SSL_WARNING_THRESHOLD) {
+      return `SSL certificate expires in ${bookmark.sslExpiryDays} days`;
+    }
+    return undefined;
+  }
+  
+  if (bookmark.healthStatus === "offline") {
+    return "Health check failed - URL is not responding or returned an error";
+  }
+  
+  if (bookmark.healthStatus === "unknown") {
+    return "Health check has not been performed yet";
+  }
+  
+  return undefined;
+}
+
 function getColorClasses(colorId: string) {
   const color = CARD_COLORS.find(c => c.id === colorId);
   if (!color || colorId === "default") return { bg: "", border: "" };
@@ -119,7 +140,11 @@ export function BookmarkCard({
                 </TooltipContent>
               </Tooltip>
             )}
-            <HealthIndicator status={bookmark.healthStatus} isAnimating={isHealthAnimating} />
+            <HealthIndicator 
+              status={bookmark.healthStatus} 
+              isAnimating={isHealthAnimating} 
+              tooltipMessage={getHealthTooltipMessage(bookmark)}
+            />
           </div>
         )}
 
