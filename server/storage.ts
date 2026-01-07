@@ -26,6 +26,7 @@ export interface IStorage {
   updateBookmarkHealth(id: string, status: "online" | "offline" | "unknown", sslExpiryDays?: number | null): Promise<Bookmark | undefined>;
   deleteBookmark(id: string): Promise<boolean>;
   reorderBookmarks(bookmarkIds: string[]): Promise<void>;
+  updateBookmarkGridPosition(id: string, gridRow: number, gridColumn: number): Promise<Bookmark | undefined>;
 
   getApiCalls(): Promise<ApiCall[]>;
   getApiCallsByCategory(categoryId: string): Promise<ApiCall[]>;
@@ -34,6 +35,7 @@ export interface IStorage {
   updateApiCall(id: string, apiCall: Partial<InsertApiCall>): Promise<ApiCall | undefined>;
   deleteApiCall(id: string): Promise<boolean>;
   reorderApiCalls(apiCallIds: string[]): Promise<void>;
+  updateApiCallGridPosition(id: string, gridRow: number, gridColumn: number): Promise<ApiCall | undefined>;
 
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -110,6 +112,7 @@ export class YamlStorage implements IStorage {
           id: randomUUID(),
           name: "General",
           order: 0,
+          columns: 4,
         };
         this.categories.set(defaultCategory.id, defaultCategory);
         this.saveToFile();
@@ -120,6 +123,7 @@ export class YamlStorage implements IStorage {
         id: randomUUID(),
         name: "General",
         order: 0,
+        columns: 4,
       };
       this.categories.set(defaultCategory.id, defaultCategory);
     }
@@ -262,6 +266,15 @@ export class YamlStorage implements IStorage {
     this.saveToFile();
   }
 
+  async updateBookmarkGridPosition(id: string, gridRow: number, gridColumn: number): Promise<Bookmark | undefined> {
+    const existing = this.bookmarks.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, gridRow, gridColumn };
+    this.bookmarks.set(id, updated);
+    this.saveToFile();
+    return updated;
+  }
+
   async getApiCalls(): Promise<ApiCall[]> {
     return Array.from(this.apiCalls.values()).sort((a, b) => a.order - b.order);
   }
@@ -308,6 +321,15 @@ export class YamlStorage implements IStorage {
       }
     });
     this.saveToFile();
+  }
+
+  async updateApiCallGridPosition(id: string, gridRow: number, gridColumn: number): Promise<ApiCall | undefined> {
+    const existing = this.apiCalls.get(id);
+    if (!existing) return undefined;
+    const updated = { ...existing, gridRow, gridColumn };
+    this.apiCalls.set(id, updated);
+    this.saveToFile();
+    return updated;
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -368,6 +390,7 @@ export class YamlStorage implements IStorage {
         id: randomUUID(),
         name: "General",
         order: 0,
+        columns: 4,
       };
       this.categories.set(defaultCategory.id, defaultCategory);
     }
