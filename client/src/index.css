@@ -371,10 +371,18 @@
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
 
-/* Glass effect for command palette */
-[data-has-bg="true"] .glass-command-palette {
+/* Glass effect for command palette - always apply when class is present */
+.glass-command-palette {
   background-color: rgba(5, 5, 8, 0.25) !important;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Glass effect for input when class is present */
+.glass-input {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
