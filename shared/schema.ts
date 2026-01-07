@@ -81,6 +81,7 @@ export type IconName = string;
 export type IconCategory = keyof typeof ICON_CATEGORIES;
 
 export const CARD_COLORS = [
+  // Solid colors
   { id: "default", name: "Default", bg: "", border: "" },
   { id: "blue", name: "Blue", bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800" },
   { id: "green", name: "Green", bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800" },
@@ -90,6 +91,24 @@ export const CARD_COLORS = [
   { id: "cyan", name: "Cyan", bg: "bg-cyan-50 dark:bg-cyan-950/30", border: "border-cyan-200 dark:border-cyan-800" },
   { id: "yellow", name: "Yellow", bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-yellow-200 dark:border-yellow-800" },
   { id: "red", name: "Red", bg: "bg-red-50 dark:bg-red-950/30", border: "border-red-200 dark:border-red-800" },
+  { id: "indigo", name: "Indigo", bg: "bg-indigo-50 dark:bg-indigo-950/30", border: "border-indigo-200 dark:border-indigo-800" },
+  { id: "teal", name: "Teal", bg: "bg-teal-50 dark:bg-teal-950/30", border: "border-teal-200 dark:border-teal-800" },
+  { id: "lime", name: "Lime", bg: "bg-lime-50 dark:bg-lime-950/30", border: "border-lime-200 dark:border-lime-800" },
+  { id: "amber", name: "Amber", bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-200 dark:border-amber-800" },
+  { id: "rose", name: "Rose", bg: "bg-rose-50 dark:bg-rose-950/30", border: "border-rose-200 dark:border-rose-800" },
+  { id: "slate", name: "Slate", bg: "bg-slate-100 dark:bg-slate-800/30", border: "border-slate-200 dark:border-slate-700" },
+  { id: "zinc", name: "Zinc", bg: "bg-zinc-100 dark:bg-zinc-800/30", border: "border-zinc-200 dark:border-zinc-700" },
+  // Gradients
+  { id: "gradient-blue-purple", name: "Blue to Purple", bg: "bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30", border: "border-blue-200 dark:border-purple-800" },
+  { id: "gradient-green-teal", name: "Green to Teal", bg: "bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30", border: "border-emerald-200 dark:border-teal-800" },
+  { id: "gradient-orange-red", name: "Orange to Red", bg: "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30", border: "border-orange-200 dark:border-red-800" },
+  { id: "gradient-pink-purple", name: "Pink to Purple", bg: "bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/30 dark:to-purple-950/30", border: "border-pink-200 dark:border-purple-800" },
+  { id: "gradient-cyan-blue", name: "Cyan to Blue", bg: "bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30", border: "border-cyan-200 dark:border-blue-800" },
+  { id: "gradient-yellow-orange", name: "Yellow to Orange", bg: "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30", border: "border-yellow-200 dark:border-orange-800" },
+  { id: "gradient-indigo-pink", name: "Indigo to Pink", bg: "bg-gradient-to-r from-indigo-50 to-pink-50 dark:from-indigo-950/30 dark:to-pink-950/30", border: "border-indigo-200 dark:border-pink-800" },
+  { id: "gradient-teal-cyan", name: "Teal to Cyan", bg: "bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/30", border: "border-teal-200 dark:border-cyan-800" },
+  { id: "gradient-rose-orange", name: "Rose to Orange", bg: "bg-gradient-to-r from-rose-50 to-orange-50 dark:from-rose-950/30 dark:to-orange-950/30", border: "border-rose-200 dark:border-orange-800" },
+  { id: "gradient-purple-blue", name: "Purple to Blue", bg: "bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30", border: "border-purple-200 dark:border-blue-800" },
 ] as const;
 
 export type CardColorId = typeof CARD_COLORS[number]["id"];
