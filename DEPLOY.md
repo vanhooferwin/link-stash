@@ -263,6 +263,182 @@ docker compose up -d
 └─────────────────────────────────────────┘
 ```
 
+## GitHub Container Registry (GHCR) Deployment
+
+Instead of building locally, you can push the image to GitHub Container Registry and pull it on your deployment server.
+
+### Setting Up GHCR
+
+#### 1. Create a Personal Access Token (PAT)
+
+1. Go to GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**
+2. Click **Generate new token (classic)**
+3. Give it a descriptive name (e.g., "GHCR Push Token")
+4. Select these scopes:
+   - `write:packages` (push images)
+   - `read:packages` (pull images)
+   - `delete:packages` (optional, for cleanup)
+5. Click **Generate token** and save it securely
+
+#### 2. Build and Push to GHCR (Manual)
+
+```bash
+# Set your GitHub username and token
+export GITHUB_USER=your-github-username
+export CR_PAT=your-personal-access-token
+
+# Login to GHCR
+echo $CR_PAT | docker login ghcr.io -u $GITHUB_USER --password-stdin
+
+# Build the image with GHCR tag
+docker build -t ghcr.io/$GITHUB_USER/bookmark-dashboard:latest \
+  --label org.opencontainers.image.source=https://github.com/$GITHUB_USER/bookmark-dashboard .
+
+# Push to GHCR
+docker push ghcr.io/$GITHUB_USER/bookmark-dashboard:latest
+
+# Optionally tag with version
+docker tag ghcr.io/$GITHUB_USER/bookmark-dashboard:latest ghcr.io/$GITHUB_USER/bookmark-dashboard:v1.0.0
+docker push ghcr.io/$GITHUB_USER/bookmark-dashboard:v1.0.0
+```
+
+#### 3. Make the Package Public (Optional)
+
+1. Go to your GitHub profile → **Packages**
+2. Click on `bookmark-dashboard`
+3. Go to **Package settings**
+4. Under **Danger Zone**, click **Change visibility** and select **Public**
+
+### Automated Builds with GitHub Actions
+
+Create `.github/workflows/docker-publish.yml` for automatic builds on push:
+
+```yaml
+name: Build and Push to GHCR
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+```
+
+### Deploy from GHCR
+
+#### Option A: Using docker-compose.ghcr.yml
+
+Use the provided `docker-compose.ghcr.yml` file to pull from GHCR instead of building locally:
+
+```bash
+# Set your GitHub username in .env
+echo "GITHUB_USER=your-github-username" >> .env
+
+# For private images, login first
+echo $CR_PAT | docker login ghcr.io -u $GITHUB_USER --password-stdin
+
+# Deploy using GHCR image
+docker compose -f docker-compose.ghcr.yml up -d
+```
+
+#### Option B: Modify docker-compose.yml
+
+Replace the `build` section with an `image` reference:
+
+```yaml
+services:
+  bookmark-dashboard:
+    image: ghcr.io/your-username/bookmark-dashboard:latest
+    # Remove the build section
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+```
+
+### Pulling Private Images
+
+If your image is private, authenticate before pulling:
+
+```bash
+# On the deployment server
+export CR_PAT=your-personal-access-token
+echo $CR_PAT | docker login ghcr.io -u your-username --password-stdin
+
+# Then run docker compose
+docker compose -f docker-compose.ghcr.yml up -d
+```
+
+### Update Workflow (GHCR)
+
+When using GHCR images:
+
+```bash
+# Pull the latest image
+docker compose -f docker-compose.ghcr.yml pull
+
+# Restart with new image
+docker compose -f docker-compose.ghcr.yml up -d
+```
+
+### GHCR Image Tags
+
+The GitHub Actions workflow creates these tags automatically:
+
+| Event | Tag Example |
+|-------|-------------|
+| Push to main | `ghcr.io/user/bookmark-dashboard:main` |
+| Git tag v1.2.3 | `ghcr.io/user/bookmark-dashboard:1.2.3` |
+| Git tag v1.2.3 | `ghcr.io/user/bookmark-dashboard:1.2` |
+| Any commit | `ghcr.io/user/bookmark-dashboard:sha-abc1234` |
+
 ## Support
 
 For issues and feature requests, please open an issue in the repository.
