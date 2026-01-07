@@ -79,6 +79,7 @@ export const healthCheckConfigSchema = z.object({
   expectedStatus: z.number().default(200),
   jsonKey: z.string().optional(),
   jsonValue: z.string().optional(),
+  checkSsl: z.boolean().default(false),
 });
 
 export type HealthCheckConfig = z.infer<typeof healthCheckConfigSchema>;
@@ -112,6 +113,7 @@ export const apiCallSchema = z.object({
   body: z.string().optional(),
   categoryId: z.string(),
   icon: z.string().default("Zap"),
+  color: z.string().default("default"),
   order: z.number().default(0),
   responseValidationEnabled: z.boolean().default(false),
   responseValidationConfig: responseValidationConfigSchema.optional(),

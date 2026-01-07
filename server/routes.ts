@@ -146,6 +146,42 @@ export async function registerRoutes(
       const expectedStatus = config?.expectedStatus || 200;
       
       try {
+        // Check SSL if enabled
+        if (config?.checkSsl) {
+          const urlObj = new URL(healthUrl);
+          if (urlObj.protocol === "https:") {
+            const https = await import("https");
+            const sslValid = await new Promise<boolean>((resolve) => {
+              const req = https.request({
+                hostname: urlObj.hostname,
+                port: urlObj.port || 443,
+                method: "HEAD",
+                timeout: 10000,
+              }, (response) => {
+                const cert = (response.socket as any).getPeerCertificate?.();
+                if (cert && cert.valid_to) {
+                  const expiryDate = new Date(cert.valid_to);
+                  resolve(expiryDate > new Date());
+                } else {
+                  resolve(true);
+                }
+              });
+              req.on("error", () => resolve(false));
+              req.on("timeout", () => {
+                req.destroy();
+                resolve(false);
+              });
+              req.end();
+            });
+            
+            if (!sslValid) {
+              status = "offline";
+              const updated = await storage.updateBookmarkHealth(id, status);
+              return res.json(updated);
+            }
+          }
+        }
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         

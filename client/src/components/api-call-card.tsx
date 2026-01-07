@@ -8,8 +8,14 @@ import {
 } from "@/components/ui/tooltip";
 import { DynamicIcon } from "./dynamic-icon";
 import { MethodBadge } from "./method-badge";
-import type { ApiCall } from "@shared/schema";
+import { CARD_COLORS, type ApiCall } from "@shared/schema";
 import { cn } from "@/lib/utils";
+
+function getColorClasses(colorId: string) {
+  const color = CARD_COLORS.find(c => c.id === colorId);
+  if (!color || colorId === "default") return { bg: "", border: "" };
+  return { bg: color.bg, border: color.border };
+}
 
 interface ApiCallCardProps {
   apiCall: ApiCall;
@@ -43,9 +49,15 @@ export function ApiCallCard({
     onExecute(apiCall);
   };
 
+  const colorClasses = getColorClasses(apiCall.color || "default");
+
   return (
     <Card
-      className="group relative p-4 border-l-4 border-l-accent transition-all duration-200 hover:shadow-md hover-elevate"
+      className={cn(
+        "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate",
+        colorClasses.bg,
+        colorClasses.border && `border ${colorClasses.border}`
+      )}
       data-testid={`api-call-card-${apiCall.id}`}
     >
       {editMode && (
