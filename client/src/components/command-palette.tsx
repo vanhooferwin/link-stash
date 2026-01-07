@@ -147,7 +147,7 @@ export function CommandPalette({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-2xl p-0 gap-0 overflow-hidden"
+        className="max-w-2xl p-0 gap-0 overflow-hidden glass-command-palette"
         onKeyDown={handleKeyDown}
       >
         <div className="flex items-center border-b px-4 py-3">

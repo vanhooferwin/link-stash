@@ -370,3 +370,11 @@
   -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
+
+/* Glass effect for command palette */
+[data-has-bg="true"] .glass-command-palette {
+  background-color: rgba(5, 5, 8, 0.25) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
