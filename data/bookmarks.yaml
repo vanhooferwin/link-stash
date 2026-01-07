@@ -27,7 +27,7 @@ bookmarks:
       expectedStatus: 200
       checkSsl: true
     sslExpiryDays: 236
-  - name: OK 27
+  - name: OK-27
     description: Testopstelling OK-27
     url: http://10.74.27.11:3000
     icon: Monitor
@@ -37,7 +37,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 0
+    order: 1
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
     lastHealthCheck: '2026-01-07T14:37:09.358Z'
@@ -52,7 +52,7 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
-    order: 2
+    order: 1
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
     healthStatus: online
     lastHealthCheck: '2026-01-07T14:37:10.038Z'
@@ -64,8 +64,35 @@ bookmarks:
     color: blue
     categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
     healthCheckEnabled: false
-    order: 1
+    order: 2
     id: ae871d60-d137-465d-b5e6-9e6526dd6929
+    healthStatus: unknown
+    lastHealthCheck: null
+    sslExpiryDays: null
+  - name: 'Videomanager '
+    description: Acceptatie / Test
+    url: http://10.74.27.5:3008
+    icon: Server
+    color: yellow
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+    order: 2
+    id: e36bce13-16db-4644-afee-b41d6c6900f9
+    healthStatus: offline
+    lastHealthCheck: '2026-01-07T16:50:54.115Z'
+    sslExpiryDays: null
+  - name: OK-3
+    description: Touch
+    url: http://10.74.26.5:3000
+    icon: Globe
+    color: blue
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    healthCheckEnabled: false
+    order: 0
+    id: 7f691ed8-626b-481f-a095-ffdf91967917
     healthStatus: unknown
     lastHealthCheck: null
     sslExpiryDays: null
