@@ -66,7 +66,7 @@ export class YamlStorage implements IStorage {
     this.bookmarks = new Map();
     this.apiCalls = new Map();
     this.users = new Map();
-    this.settings = {};
+    this.settings = { backgroundBrightness: 100, backgroundOpacity: 100 };
     this.loadFromFile();
   }
 
@@ -94,7 +94,10 @@ export class YamlStorage implements IStorage {
             data.users.forEach(user => this.users.set(user.id, user));
           }
           if (data.settings) {
-            this.settings = data.settings;
+            this.settings = {
+              ...this.settings,
+              ...data.settings,
+            };
           }
         }
       }

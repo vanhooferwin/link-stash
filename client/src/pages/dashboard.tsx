@@ -3,6 +3,8 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,6 +82,8 @@ export default function Dashboard() {
   };
 
   const backgroundImageUrl = settings?.backgroundImageUrl;
+  const backgroundBrightness = settings?.backgroundBrightness ?? 100;
+  const backgroundOpacity = settings?.backgroundOpacity ?? 100;
 
   // Function to refresh all health checks
   const refreshAllHealthChecks = async () => {
@@ -381,7 +385,11 @@ export default function Dashboard() {
         {backgroundImageUrl && (
           <div
             className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
-            style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+            style={{ 
+              backgroundImage: `url(${backgroundImageUrl})`,
+              filter: `brightness(${backgroundBrightness / 100})`,
+              opacity: backgroundOpacity / 100,
+            }}
           />
         )}
         <AppSidebar
@@ -476,35 +484,68 @@ export default function Dashboard() {
 
           {showBgInput && editMode && (
             <div className={cn(
-              "flex items-center gap-2 p-4 border-b",
+              "flex flex-col gap-4 p-4 border-b",
               backgroundImageUrl ? "bg-background/70 backdrop-blur-xl" : "bg-background"
             )}>
-              <Input
-                type="url"
-                placeholder="Background image URL (e.g., https://images.unsplash.com/...)"
-                value={bgInputValue}
-                onChange={(e) => setBgInputValue(e.target.value)}
-                className="flex-1"
-                data-testid="input-background-url"
-              />
-              <Button
-                onClick={handleSetBackground}
-                disabled={updateSettingsMutation.isPending}
-                data-testid="button-apply-background"
-              >
-                Apply
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setBgInputValue("");
-                  updateSettingsMutation.mutate({ backgroundImageUrl: null });
-                }}
-                disabled={updateSettingsMutation.isPending}
-                data-testid="button-clear-background"
-              >
-                Clear
-              </Button>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="url"
+                  placeholder="Background image URL (e.g., https://images.unsplash.com/...)"
+                  value={bgInputValue}
+                  onChange={(e) => setBgInputValue(e.target.value)}
+                  className="flex-1"
+                  data-testid="input-background-url"
+                />
+                <Button
+                  onClick={handleSetBackground}
+                  disabled={updateSettingsMutation.isPending}
+                  data-testid="button-apply-background"
+                >
+                  Apply
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setBgInputValue("");
+                    updateSettingsMutation.mutate({ backgroundImageUrl: null });
+                  }}
+                  disabled={updateSettingsMutation.isPending}
+                  data-testid="button-clear-background"
+                >
+                  Clear
+                </Button>
+              </div>
+              
+              {backgroundImageUrl && (
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3 flex-1">
+                    <Label className="text-sm text-muted-foreground w-20">Brightness</Label>
+                    <Slider
+                      value={[backgroundBrightness]}
+                      onValueChange={([value]) => updateSettingsMutation.mutate({ backgroundBrightness: value })}
+                      min={0}
+                      max={200}
+                      step={5}
+                      className="flex-1"
+                      data-testid="slider-brightness"
+                    />
+                    <span className="text-sm text-muted-foreground w-12 text-right">{backgroundBrightness}%</span>
+                  </div>
+                  <div className="flex items-center gap-3 flex-1">
+                    <Label className="text-sm text-muted-foreground w-20">Opacity</Label>
+                    <Slider
+                      value={[backgroundOpacity]}
+                      onValueChange={([value]) => updateSettingsMutation.mutate({ backgroundOpacity: value })}
+                      min={0}
+                      max={100}
+                      step={5}
+                      className="flex-1"
+                      data-testid="slider-opacity"
+                    />
+                    <span className="text-sm text-muted-foreground w-12 text-right">{backgroundOpacity}%</span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

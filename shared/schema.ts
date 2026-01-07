@@ -175,12 +175,16 @@ export type ApiResponse = z.infer<typeof apiResponseSchema>;
 
 export const settingsSchema = z.object({
   backgroundImageUrl: z.string().optional().nullable(),
+  backgroundBrightness: z.number().min(0).max(200).default(100),
+  backgroundOpacity: z.number().min(0).max(100).default(100),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;
 
 export type SettingsUpdate = {
   backgroundImageUrl?: string | null;
+  backgroundBrightness?: number;
+  backgroundOpacity?: number;
 };
 
 export const users = {} as any;

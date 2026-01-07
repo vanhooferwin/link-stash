@@ -82,4 +82,6 @@ apiCalls:
       jsonValue: ''
 users: []
 settings:
-  backgroundImageUrl: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=3544&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+  backgroundBrightness: 100
+  backgroundOpacity: 100
+  backgroundImageUrl: https://images.unsplash.com/photo-1638886716365-4a18b67e371f?q=80&w=3840&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
