@@ -176,6 +176,40 @@ bookmarks:
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 0
+  - name: Mpluz*
+    description: Website
+    url: https://www.mpluz.nl
+    icon: Globe
+    color: blue
+    categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+    order: 0
+    gridRow: 0
+    gridColumn: 4
+    id: 77d2ef54-9239-4b41-a56d-46f2925e3d4d
+    healthStatus: online
+    lastHealthCheck: '2026-01-07T18:53:58.026Z'
+    sslExpiryDays: null
+  - name: Proxmox
+    description: Virtualisatie platform
+    url: https://10.10.30.199:8006
+    icon: Box
+    color: gradient-teal-cyan
+    categoryId: 684f8a7c-8137-4f3b-b917-4327c9e0be6f
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+    order: 0
+    gridRow: 0
+    gridColumn: 0
+    id: 84d6bece-184a-4705-bdf6-2bc33dfa20c5
+    healthStatus: offline
+    lastHealthCheck: '2026-01-07T19:06:20.331Z'
+    sslExpiryDays: null
 apiCalls: []
 users: []
 settings:

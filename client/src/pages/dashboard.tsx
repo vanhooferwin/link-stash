@@ -710,12 +710,36 @@ export default function Dashboard() {
     if (!draggingItem) return;
     
     if (draggingItem.type === 'bookmark') {
+      const isOccupied = bookmarks.some(
+        b => b.categoryId === categoryId && 
+             (b.gridRow ?? 0) === row && 
+             (b.gridColumn ?? 0) === col && 
+             b.id !== draggingItem.id
+      );
+      if (isOccupied) {
+        toast({ title: "Cell is already occupied", variant: "destructive" });
+        setDraggingItem(null);
+        setDropTarget(null);
+        return;
+      }
       updateBookmarkGridPositionMutation.mutate({
         id: draggingItem.id,
         gridRow: row,
         gridColumn: col,
       });
     } else {
+      const isOccupied = apiCalls.some(
+        a => a.categoryId === categoryId && 
+             (a.gridRow ?? 0) === row && 
+             (a.gridColumn ?? 0) === col && 
+             a.id !== draggingItem.id
+      );
+      if (isOccupied) {
+        toast({ title: "Cell is already occupied", variant: "destructive" });
+        setDraggingItem(null);
+        setDropTarget(null);
+        return;
+      }
       updateApiCallGridPositionMutation.mutate({
         id: draggingItem.id,
         gridRow: row,
@@ -725,7 +749,7 @@ export default function Dashboard() {
     
     setDraggingItem(null);
     setDropTarget(null);
-  }, [draggingItem, updateBookmarkGridPositionMutation, updateApiCallGridPositionMutation]);
+  }, [draggingItem, bookmarks, apiCalls, updateBookmarkGridPositionMutation, updateApiCallGridPositionMutation, toast]);
 
   const handleDragEnd = useCallback(() => {
     setDraggingItem(null);
@@ -924,7 +948,7 @@ export default function Dashboard() {
           hasBackgroundImage={!!backgroundImageUrl}
         />
 
-        <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex flex-col flex-1 min-w-0 min-h-0 overflow-hidden">
           <header className={cn(
             "h-[65px] flex items-center justify-between gap-4 px-4 border-b",
             backgroundImageUrl
