@@ -5,6 +5,9 @@ import {
   type User, type InsertUser
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import * as fs from "fs";
+import * as yaml from "js-yaml";
+import * as path from "path";
 
 export interface IStorage {
   getCategories(): Promise<Category[]>;
@@ -33,7 +36,17 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
 }
 
-export class MemStorage implements IStorage {
+interface YamlData {
+  categories: Category[];
+  bookmarks: Bookmark[];
+  apiCalls: ApiCall[];
+  users: User[];
+}
+
+const DATA_DIR = process.env.DATA_DIR || "./data";
+const YAML_FILE = path.join(DATA_DIR, "bookmarks.yaml");
+
+export class YamlStorage implements IStorage {
   private categories: Map<string, Category>;
   private bookmarks: Map<string, Bookmark>;
   private apiCalls: Map<string, ApiCall>;
@@ -44,13 +57,79 @@ export class MemStorage implements IStorage {
     this.bookmarks = new Map();
     this.apiCalls = new Map();
     this.users = new Map();
+    this.loadFromFile();
+  }
 
-    const defaultCategory: Category = {
-      id: randomUUID(),
-      name: "General",
-      order: 0,
-    };
-    this.categories.set(defaultCategory.id, defaultCategory);
+  private loadFromFile(): void {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      if (fs.existsSync(YAML_FILE)) {
+        const fileContent = fs.readFileSync(YAML_FILE, "utf8");
+        const data = yaml.load(fileContent) as YamlData | null;
+        
+        if (data) {
+          if (data.categories) {
+            data.categories.forEach(cat => this.categories.set(cat.id, cat));
+          }
+          if (data.bookmarks) {
+            data.bookmarks.forEach(bm => this.bookmarks.set(bm.id, bm));
+          }
+          if (data.apiCalls) {
+            data.apiCalls.forEach(ac => this.apiCalls.set(ac.id, ac));
+          }
+          if (data.users) {
+            data.users.forEach(user => this.users.set(user.id, user));
+          }
+        }
+      }
+
+      if (this.categories.size === 0) {
+        const defaultCategory: Category = {
+          id: randomUUID(),
+          name: "General",
+          order: 0,
+        };
+        this.categories.set(defaultCategory.id, defaultCategory);
+        this.saveToFile();
+      }
+    } catch (error) {
+      console.error("Error loading YAML file:", error);
+      const defaultCategory: Category = {
+        id: randomUUID(),
+        name: "General",
+        order: 0,
+      };
+      this.categories.set(defaultCategory.id, defaultCategory);
+    }
+  }
+
+  private saveToFile(): void {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+
+      const data: YamlData = {
+        categories: Array.from(this.categories.values()),
+        bookmarks: Array.from(this.bookmarks.values()),
+        apiCalls: Array.from(this.apiCalls.values()),
+        users: Array.from(this.users.values()),
+      };
+
+      const yamlContent = yaml.dump(data, {
+        indent: 2,
+        lineWidth: -1,
+        noRefs: true,
+        sortKeys: false,
+      });
+
+      fs.writeFileSync(YAML_FILE, yamlContent, "utf8");
+    } catch (error) {
+      console.error("Error saving YAML file:", error);
+    }
   }
 
   async getCategories(): Promise<Category[]> {
@@ -65,6 +144,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const category: Category = { ...insertCategory, id };
     this.categories.set(id, category);
+    this.saveToFile();
     return category;
   }
 
@@ -73,11 +153,14 @@ export class MemStorage implements IStorage {
     if (!existing) return undefined;
     const updated = { ...existing, ...updates };
     this.categories.set(id, updated);
+    this.saveToFile();
     return updated;
   }
 
   async deleteCategory(id: string): Promise<boolean> {
-    return this.categories.delete(id);
+    const result = this.categories.delete(id);
+    if (result) this.saveToFile();
+    return result;
   }
 
   async getBookmarks(): Promise<Bookmark[]> {
@@ -103,6 +186,7 @@ export class MemStorage implements IStorage {
       lastHealthCheck: null,
     };
     this.bookmarks.set(id, bookmark);
+    this.saveToFile();
     return bookmark;
   }
 
@@ -111,6 +195,7 @@ export class MemStorage implements IStorage {
     if (!existing) return undefined;
     const updated = { ...existing, ...updates };
     this.bookmarks.set(id, updated);
+    this.saveToFile();
     return updated;
   }
 
@@ -123,11 +208,14 @@ export class MemStorage implements IStorage {
       lastHealthCheck: new Date().toISOString(),
     };
     this.bookmarks.set(id, updated);
+    this.saveToFile();
     return updated;
   }
 
   async deleteBookmark(id: string): Promise<boolean> {
-    return this.bookmarks.delete(id);
+    const result = this.bookmarks.delete(id);
+    if (result) this.saveToFile();
+    return result;
   }
 
   async getApiCalls(): Promise<ApiCall[]> {
@@ -148,6 +236,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const apiCall: ApiCall = { ...insertApiCall, id };
     this.apiCalls.set(id, apiCall);
+    this.saveToFile();
     return apiCall;
   }
 
@@ -156,11 +245,14 @@ export class MemStorage implements IStorage {
     if (!existing) return undefined;
     const updated = { ...existing, ...updates };
     this.apiCalls.set(id, updated);
+    this.saveToFile();
     return updated;
   }
 
   async deleteApiCall(id: string): Promise<boolean> {
-    return this.apiCalls.delete(id);
+    const result = this.apiCalls.delete(id);
+    if (result) this.saveToFile();
+    return result;
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -177,8 +269,9 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
+    this.saveToFile();
     return user;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new YamlStorage();

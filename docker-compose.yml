@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  bookmark-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - bookmark-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATA_DIR=/app/data
+    restart: unless-stopped
+
+volumes:
+  bookmark-data:
+    driver: local
