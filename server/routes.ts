@@ -291,6 +291,53 @@ export async function registerRoutes(
           headers[key] = value;
         });
 
+        let validationResult: { passed: boolean; reason?: string } | undefined;
+        
+        if (apiCall.responseValidationEnabled && apiCall.responseValidationConfig) {
+          const config = apiCall.responseValidationConfig;
+          const expectedStatus = config.expectedStatus || 200;
+          
+          if (response.status !== expectedStatus) {
+            validationResult = { 
+              passed: false, 
+              reason: `Expected status ${expectedStatus}, got ${response.status}` 
+            };
+          } else if (config.jsonKey) {
+            try {
+              const json = JSON.parse(bodyText);
+              const keys = config.jsonKey.split(".");
+              let value = json;
+              for (const key of keys) {
+                value = value?.[key];
+              }
+              
+              if (config.jsonValue) {
+                if (String(value) === config.jsonValue) {
+                  validationResult = { passed: true };
+                } else {
+                  validationResult = { 
+                    passed: false, 
+                    reason: `Expected "${config.jsonKey}" = "${config.jsonValue}", got "${value}"` 
+                  };
+                }
+              } else {
+                if (value !== undefined) {
+                  validationResult = { passed: true };
+                } else {
+                  validationResult = { 
+                    passed: false, 
+                    reason: `Key "${config.jsonKey}" not found in response` 
+                  };
+                }
+              }
+            } catch {
+              validationResult = { passed: false, reason: "Failed to parse response as JSON" };
+            }
+          } else {
+            validationResult = { passed: true };
+          }
+        }
+
         res.json({
           status: response.status,
           statusText: response.statusText,
@@ -298,10 +345,15 @@ export async function registerRoutes(
           body: bodyText,
           duration,
           timestamp: new Date().toISOString(),
+          validationResult,
         });
       } catch (fetchError: any) {
         clearTimeout(timeoutId);
         const duration = Date.now() - startTime;
+        
+        const validationResult = apiCall.responseValidationEnabled 
+          ? { passed: false, reason: fetchError.name === "AbortError" ? "Request timeout" : "Network error" }
+          : undefined;
         
         if (fetchError.name === "AbortError") {
           res.json({
@@ -311,6 +363,7 @@ export async function registerRoutes(
             body: "Request timed out after 30 seconds",
             duration,
             timestamp: new Date().toISOString(),
+            validationResult,
           });
         } else {
           res.json({
@@ -320,6 +373,7 @@ export async function registerRoutes(
             body: fetchError.message || "Failed to connect to the server",
             duration,
             timestamp: new Date().toISOString(),
+            validationResult,
           });
         }
       }

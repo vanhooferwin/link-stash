@@ -56,6 +56,14 @@ export type CardColorId = typeof CARD_COLORS[number]["id"];
 export const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 export type HttpMethod = typeof HTTP_METHODS[number];
 
+export const responseValidationConfigSchema = z.object({
+  expectedStatus: z.number().default(200),
+  jsonKey: z.string().optional(),
+  jsonValue: z.string().optional(),
+});
+
+export type ResponseValidationConfig = z.infer<typeof responseValidationConfigSchema>;
+
 export const categorySchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required"),
@@ -105,6 +113,8 @@ export const apiCallSchema = z.object({
   categoryId: z.string(),
   icon: z.string().default("Zap"),
   order: z.number().default(0),
+  responseValidationEnabled: z.boolean().default(false),
+  responseValidationConfig: responseValidationConfigSchema.optional(),
 });
 
 export const insertApiCallSchema = apiCallSchema.omit({ id: true });

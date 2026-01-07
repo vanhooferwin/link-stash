@@ -175,13 +175,35 @@ export default function Dashboard() {
     },
     onSuccess: ({ apiCall, response }) => {
       setExecutingApiCallId(null);
-      setCurrentResponse({ apiCall, response, error: null });
-      setResponseModalOpen(true);
+      
+      if (apiCall.responseValidationEnabled && response.validationResult) {
+        if (response.validationResult.passed) {
+          toast({ title: `${apiCall.name}: OK` });
+        } else {
+          toast({ 
+            title: `${apiCall.name}: FAILED`, 
+            description: response.validationResult.reason,
+            variant: "destructive" 
+          });
+        }
+      } else {
+        setCurrentResponse({ apiCall, response, error: null });
+        setResponseModalOpen(true);
+      }
     },
     onError: (error: Error, apiCall) => {
       setExecutingApiCallId(null);
-      setCurrentResponse({ apiCall, response: null, error: error.message });
-      setResponseModalOpen(true);
+      
+      if (apiCall.responseValidationEnabled) {
+        toast({ 
+          title: `${apiCall.name}: FAILED`, 
+          description: error.message,
+          variant: "destructive" 
+        });
+      } else {
+        setCurrentResponse({ apiCall, response: null, error: error.message });
+        setResponseModalOpen(true);
+      }
     },
   });
 
