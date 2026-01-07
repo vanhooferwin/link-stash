@@ -141,17 +141,37 @@ export async function registerRoutes(
       }
 
       let status: "online" | "offline" = "offline";
+      const config = bookmark.healthCheckConfig;
+      const healthUrl = config?.url || bookmark.url;
+      const expectedStatus = config?.expectedStatus || 200;
+      
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         
-        const response = await fetch(bookmark.url, {
-          method: "HEAD",
+        const response = await fetch(healthUrl, {
+          method: config?.jsonKey ? "GET" : "HEAD",
           signal: controller.signal,
         });
         clearTimeout(timeoutId);
         
-        status = response.ok ? "online" : "offline";
+        if (response.status !== expectedStatus) {
+          status = "offline";
+        } else if (config?.jsonKey) {
+          try {
+            const json = await response.json();
+            const value = json[config.jsonKey];
+            if (config.jsonValue) {
+              status = String(value) === config.jsonValue ? "online" : "offline";
+            } else {
+              status = value !== undefined ? "online" : "offline";
+            }
+          } catch {
+            status = "offline";
+          }
+        } else {
+          status = "online";
+        }
       } catch {
         status = "offline";
       }
