@@ -33,7 +33,7 @@ bookmarks:
     order: 0
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T12:16:21.493Z'
+    lastHealthCheck: '2026-01-07T12:17:09.576Z'
     sslExpiryDays: null
   - name: SiteOn
     description: Place to be
