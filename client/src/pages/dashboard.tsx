@@ -407,13 +407,13 @@ export default function Dashboard() {
             <div className="flex items-center gap-4 flex-1">
               <SidebarTrigger data-testid="button-sidebar-toggle" />
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                 <Input
                   type="search"
                   placeholder="Search bookmarks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
+                  className={cn("pl-9", backgroundImageUrl && "glass-input")}
                   data-testid="input-search"
                 />
               </div>
