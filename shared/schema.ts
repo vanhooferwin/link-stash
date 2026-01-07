@@ -50,13 +50,15 @@ export const ICON_CATEGORIES = {
     "Mail", "MessageSquare", "Send", "Inbox", "Users", "UserPlus"
   ],
   "General": [
-    "Home", "Star", "Heart", "Bookmark", "File", "FileText", "ClipboardList",
+    "Home", "Dashboard", "LayoutDashboard", "AppWindow", "Application",
+    "Star", "Heart", "Bookmark", "File", "FileText", "ClipboardList",
     "Calendar", "Clock", "MapPin", "Navigation", "Compass", "Map",
     "Settings", "Cog", "Wrench", "Hammer", "Tool",
     "Zap", "Flame", "Sun", "Moon", "Coffee",
     "Book", "Newspaper", "List", "Grid", "Search", "Eye", "Edit", "Trash", "Plus", "Check",
     "Download", "Upload", "Refresh", "Package", "Box", "Cube", "Hexagon",
-    "Hand", "Pointer", "MousePointer", "Monitor", "MonitorSmartphone", "Tv", "Tablet", "Smartphone", "Touchscreen", "Nas", "ServerStack"
+    "Hand", "Pointer", "MousePointer", "Monitor", "MonitorSmartphone", "Tv", "Tablet", "Smartphone", "Touchscreen", "Nas", "ServerStack",
+    "Barco", "Presentation", "Projector", "MonitorPlay"
   ],
   "Payment & Commerce": [
     "Stripe", "Paypal", "Shopify", "CreditCard", "DollarSign", "Wallet",

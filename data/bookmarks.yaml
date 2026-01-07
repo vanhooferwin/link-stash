@@ -6,7 +6,7 @@ categories:
   - name: Test opstelling
     order: 1
     id: fdbb9cf3-4255-4da3-93c7-81b73212adeb
-    columns: 6
+    columns: 8
   - name: DevOps
     order: 2
     columns: 6
@@ -28,7 +28,7 @@ bookmarks:
       checkSsl: true
     sslExpiryDays: 236
   - name: OK-27
-    description: Testopstelling OK-27
+    description: Touch
     url: http://10.74.27.11:3000
     icon: Touchscreen
     color: blue
@@ -40,7 +40,7 @@ bookmarks:
     order: 1
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T17:00:16.966Z'
+    lastHealthCheck: '2026-01-07T17:26:03.745Z'
     sslExpiryDays: null
   - name: JIRA
     description: Tickets & more
@@ -99,6 +99,36 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
+  - name: Admin
+    description: Acceptatie / Test
+    url: http://10.74.27.5:3010
+    icon: Settings
+    color: red
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+    order: 3
+    id: 092ab251-7708-4ab7-8649-7ea348188b80
+    healthStatus: offline
+    lastHealthCheck: '2026-01-07T17:26:34.672Z'
+    sslExpiryDays: null
+  - name: OK-3
+    description: NMS
+    url: https://10.74.27.11:8443/nms
+    icon: Circuit
+    color: yellow
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    healthCheckEnabled: true
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+    order: 0
+    id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
+    healthStatus: offline
+    lastHealthCheck: '2026-01-07T17:28:56.937Z'
+    sslExpiryDays: null
 apiCalls: []
 users: []
 settings:

@@ -221,6 +221,10 @@ export function DynamicIcon({ name, className }: DynamicIconProps) {
     
     // General
     Home: LucideIcons.Home,
+    Dashboard: LucideIcons.LayoutDashboard,
+    LayoutDashboard: LucideIcons.LayoutDashboard,
+    AppWindow: LucideIcons.AppWindow,
+    Application: LucideIcons.AppWindow,
     Star: LucideIcons.Star,
     Heart: LucideIcons.Heart,
     Bookmark: LucideIcons.Bookmark,
@@ -271,6 +275,10 @@ export function DynamicIcon({ name, className }: DynamicIconProps) {
     Touchscreen: LucideIcons.MonitorSmartphone,
     Nas: LucideIcons.HardDrive,
     ServerStack: LucideIcons.Server,
+    Barco: LucideIcons.MonitorPlay,
+    Presentation: LucideIcons.Presentation,
+    Projector: LucideIcons.Projector,
+    MonitorPlay: LucideIcons.MonitorPlay,
     
     // Payment & Commerce
     Stripe: SiStripe,
