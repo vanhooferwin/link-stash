@@ -18,6 +18,7 @@ interface BookmarkCardProps {
   onHealthCheck: (id: string) => void;
   isCheckingHealth?: boolean;
   editMode?: boolean;
+  isHealthAnimating?: boolean;
 }
 
 export function BookmarkCard({
@@ -27,6 +28,7 @@ export function BookmarkCard({
   onHealthCheck,
   isCheckingHealth = false,
   editMode = false,
+  isHealthAnimating = false,
 }: BookmarkCardProps) {
   const handleEdit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -112,7 +114,7 @@ export function BookmarkCard({
 
         {bookmark.healthCheckEnabled && (
           <div className={cn("absolute top-3 right-3", editMode && "group-hover:invisible")}>
-            <HealthIndicator status={bookmark.healthStatus} />
+            <HealthIndicator status={bookmark.healthStatus} isAnimating={isHealthAnimating} />
           </div>
         )}
 

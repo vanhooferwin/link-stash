@@ -34,6 +34,7 @@ export default function Dashboard() {
   const [checkingHealthId, setCheckingHealthId] = useState<string | null>(null);
   const [executingApiCallId, setExecutingApiCallId] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [animatingHealthId, setAnimatingHealthId] = useState<string | null>(null);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -126,9 +127,11 @@ export default function Dashboard() {
       setCheckingHealthId(id);
       return apiRequest("POST", `/api/bookmarks/${id}/health`);
     },
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
       setCheckingHealthId(null);
+      setAnimatingHealthId(id);
+      setTimeout(() => setAnimatingHealthId(null), 700);
     },
     onError: () => {
       setCheckingHealthId(null);
@@ -368,6 +371,7 @@ export default function Dashboard() {
                           onHealthCheck={(id) => healthCheckMutation.mutate(id)}
                           isCheckingHealth={checkingHealthId === bookmark.id}
                           editMode={editMode}
+                          isHealthAnimating={animatingHealthId === bookmark.id}
                         />
                       ))}
                     </div>
