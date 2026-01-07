@@ -131,9 +131,9 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
                 </div>
               ) : (
                 <div className="grid grid-cols-8 gap-2 p-1">
-                  {filteredIcons.map((icon) => (
+                  {filteredIcons.map((icon, index) => (
                     <Button
-                      key={icon}
+                      key={`${icon}-${index}`}
                       variant="ghost"
                       className={cn(
                         "flex flex-col items-center gap-1 h-auto py-2 px-1",
