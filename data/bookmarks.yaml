@@ -1,10 +1,12 @@
 categories:
   - id: f4fac5cc-6826-4a45-8e12-442fd109a749
-    name: General
+    name: Algemeen
     order: 0
+    columns: 6
   - name: Test opstelling
     order: 0
     id: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    columns: 6
 bookmarks:
   - name: BitBucket
     description: Mpluz* version control
@@ -15,7 +17,7 @@ bookmarks:
     order: 0
     id: ad857c46-d845-4ede-9ed9-63a1c21b728c
     healthStatus: online
-    lastHealthCheck: '2026-01-07T12:16:21.347Z'
+    lastHealthCheck: '2026-01-07T14:37:09.208Z'
     color: green
     healthCheckConfig:
       expectedStatus: 200
@@ -34,7 +36,7 @@ bookmarks:
     order: 0
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-07T12:17:09.576Z'
+    lastHealthCheck: '2026-01-07T14:37:09.358Z'
     sslExpiryDays: null
   - name: JIRA
     description: Tickets & more
@@ -49,8 +51,8 @@ bookmarks:
     order: 0
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
     healthStatus: online
-    lastHealthCheck: '2026-01-07T12:16:22.539Z'
-    sslExpiryDays: 89
+    lastHealthCheck: '2026-01-07T14:37:10.038Z'
+    sslExpiryDays: null
   - name: SharePoint
     description: ''
     url: https://mpluz-my.sharepoint.com/
@@ -63,23 +65,7 @@ bookmarks:
     healthStatus: unknown
     lastHealthCheck: null
     sslExpiryDays: null
-apiCalls:
-  - name: Test API
-    description: ''
-    url: https://jsonplaceholder.typicode.com/todos/1
-    method: GET
-    headers: {}
-    body: ''
-    categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
-    icon: Zap
-    order: 0
-    id: be4b8662-f146-4e04-a3ff-eb2f8b25d77c
-    color: default
-    responseValidationEnabled: false
-    responseValidationConfig:
-      expectedStatus: 200
-      jsonKey: ''
-      jsonValue: ''
+apiCalls: []
 users: []
 settings:
   backgroundBrightness: 75
