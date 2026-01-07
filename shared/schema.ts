@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const AVAILABLE_ICONS = [
+  // General
   "Globe", "Home", "Star", "Heart", "Bookmark", "Folder", "File", "Code",
   "Terminal", "Database", "Server", "Cloud", "Monitor", "Smartphone", "Laptop",
   "Wifi", "Lock", "Key", "Shield", "Settings", "Cog", "Tool", "Wrench",
@@ -13,10 +14,27 @@ export const AVAILABLE_ICONS = [
   "Gift", "Package", "Truck", "Plane", "Car", "Bike", "Train",
   "Coffee", "Utensils", "Pizza", "Apple", "Leaf", "Tree", "Flower",
   "Book", "Newspaper", "FileText", "ClipboardList", "CheckSquare", "List",
-  "Grid", "Layers", "Box", "Cube", "Hexagon", "Circle", "Square", "Triangle",
+  "Grid", "Layers", "Cube", "Hexagon", "Circle", "Square", "Triangle",
   "Link", "ExternalLink", "Share", "Download", "Upload", "Refresh", "Search",
   "Eye", "EyeOff", "Edit", "Trash", "Plus", "Minus", "X", "Check",
-  "Github", "Gitlab", "Twitter", "Linkedin", "Facebook", "Instagram", "Youtube"
+  // Cloud & Infrastructure
+  "CloudUpload", "CloudDownload", "HardDrive", "Cpu", "Router", "Network",
+  "Container", "Blocks", "TerminalSquare", "KeyRound", "ShieldCheck", "Bug",
+  // Brand icons (react-icons/si)
+  "Github", "Gitlab", "Bitbucket", "Jira", "Confluence", "Trello",
+  "Slack", "Discord", "Teams", "Zoom",
+  "Aws", "Azure", "GoogleCloud", "DigitalOcean", "Cloudflare",
+  "Docker", "Kubernetes", "Jenkins", "CircleCi", "TravisCi",
+  "Npm", "Yarn", "Nodejs", "Python", "Java", "Go", "Rust", "Php",
+  "React", "Vue", "Angular", "Svelte", "Nextjs",
+  "Mongodb", "Postgresql", "Mysql", "Redis", "Elasticsearch",
+  "OneDrive", "GoogleDrive", "Dropbox", "Box",
+  "Notion", "Figma", "Miro", "Airtable",
+  "Stripe", "Paypal", "Shopify",
+  "Twitter", "Linkedin", "Facebook", "Instagram", "Youtube", "Tiktok",
+  "Spotify", "Netflix", "Twitch", "Steam",
+  "Apple", "Microsoft", "Google", "Amazon",
+  "Ssh", "Ftp", "Api", "Webhook", "Rss"
 ] as const;
 
 export type IconName = typeof AVAILABLE_ICONS[number];
