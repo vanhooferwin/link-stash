@@ -346,7 +346,14 @@ export class YamlStorage implements IStorage {
   }
 
   async updateSettings(updates: Partial<Settings>): Promise<Settings> {
-    this.settings = { ...this.settings, ...updates };
+    // Handle null or empty string values to clear properties
+    for (const [key, value] of Object.entries(updates)) {
+      if (value === null || value === "") {
+        delete (this.settings as Record<string, unknown>)[key];
+      } else {
+        (this.settings as Record<string, unknown>)[key] = value;
+      }
+    }
     this.saveToFile();
     return this.settings;
   }
