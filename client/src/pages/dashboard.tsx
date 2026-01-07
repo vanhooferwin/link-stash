@@ -1,23 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw, GripVertical } from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  rectSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -47,48 +30,38 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall, Settings as SettingsType, SettingsUpdate } from "@shared/schema";
 
-interface SortableBookmarkCardProps {
+interface DraggableBookmarkCardProps {
   bookmark: BookmarkType;
   onEdit: (bookmark: BookmarkType) => void;
   onDelete: (id: string) => void;
   editMode: boolean;
   isHealthAnimating: boolean;
   hasBackgroundImage: boolean;
+  onDragStart: (e: React.DragEvent, bookmark: BookmarkType) => void;
 }
 
-function SortableBookmarkCard({
+function DraggableBookmarkCard({
   bookmark,
   onEdit,
   onDelete,
   editMode,
   isHealthAnimating,
   hasBackgroundImage,
-}: SortableBookmarkCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: bookmark.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
+  onDragStart,
+}: DraggableBookmarkCardProps) {
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className="relative">
+    <div 
+      className="relative"
+      draggable={editMode}
+      onDragStart={(e) => onDragStart(e, bookmark)}
+    >
       {editMode && (
-        <button
-          {...listeners}
+        <div
           className="absolute -top-1 -left-1 z-10 p-1 cursor-grab bg-background/80 hover:bg-background rounded shadow-sm border"
           data-testid={`drag-handle-bookmark-${bookmark.id}`}
         >
           <GripVertical className="h-3 w-3 text-muted-foreground" />
-        </button>
+        </div>
       )}
       <BookmarkCard
         bookmark={bookmark}
@@ -102,7 +75,7 @@ function SortableBookmarkCard({
   );
 }
 
-interface SortableApiCallCardProps {
+interface DraggableApiCallCardProps {
   apiCall: ApiCall;
   onEdit: (apiCall: ApiCall) => void;
   onDelete: (id: string) => void;
@@ -110,9 +83,10 @@ interface SortableApiCallCardProps {
   editMode: boolean;
   isExecuting: boolean;
   hasBackgroundImage: boolean;
+  onDragStart: (e: React.DragEvent, apiCall: ApiCall) => void;
 }
 
-function SortableApiCallCard({
+function DraggableApiCallCard({
   apiCall,
   onEdit,
   onDelete,
@@ -120,32 +94,21 @@ function SortableApiCallCard({
   editMode,
   isExecuting,
   hasBackgroundImage,
-}: SortableApiCallCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: apiCall.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
+  onDragStart,
+}: DraggableApiCallCardProps) {
   return (
-    <div ref={setNodeRef} style={style} {...attributes} className="relative">
+    <div 
+      className="relative"
+      draggable={editMode}
+      onDragStart={(e) => onDragStart(e, apiCall)}
+    >
       {editMode && (
-        <button
-          {...listeners}
+        <div
           className="absolute -top-1 -left-1 z-10 p-1 cursor-grab bg-background/80 hover:bg-background rounded shadow-sm border"
           data-testid={`drag-handle-api-call-${apiCall.id}`}
         >
           <GripVertical className="h-3 w-3 text-muted-foreground" />
-        </button>
+        </div>
       )}
       <ApiCallCard
         apiCall={apiCall}
@@ -157,6 +120,39 @@ function SortableApiCallCard({
         hasBackgroundImage={hasBackgroundImage}
       />
     </div>
+  );
+}
+
+interface GridCellProps {
+  row: number;
+  col: number;
+  onDrop: (row: number, col: number) => void;
+  isOver: boolean;
+  onDragEnter: (row: number, col: number) => void;
+  onDragLeave: () => void;
+  editMode: boolean;
+}
+
+function GridCell({ row, col, onDrop, isOver, onDragEnter, onDragLeave, editMode }: GridCellProps) {
+  if (!editMode) return null;
+  
+  return (
+    <div
+      className={cn(
+        "border-2 border-dashed rounded-md transition-colors min-h-[80px]",
+        isOver ? "border-primary bg-primary/10" : "border-muted-foreground/20"
+      )}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragEnter(row, col);
+      }}
+      onDragLeave={onDragLeave}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop(row, col);
+      }}
+      data-testid={`grid-cell-${row}-${col}`}
+    />
   );
 }
 
@@ -178,6 +174,8 @@ export default function Dashboard() {
   const [bgInputValue, setBgInputValue] = useState("");
   const [isRefreshingHealth, setIsRefreshingHealth] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [draggingItem, setDraggingItem] = useState<{ type: 'bookmark' | 'apiCall'; id: string } | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ row: number; col: number; categoryId: string } | null>(null);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -450,6 +448,28 @@ export default function Dashboard() {
     },
   });
 
+  const updateBookmarkGridPositionMutation = useMutation({
+    mutationFn: ({ id, gridRow, gridColumn }: { id: string; gridRow: number; gridColumn: number }) =>
+      apiRequest("PATCH", `/api/bookmarks/${id}/grid-position`, { gridRow, gridColumn }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to update position", variant: "destructive" });
+    },
+  });
+
+  const updateApiCallGridPositionMutation = useMutation({
+    mutationFn: ({ id, gridRow, gridColumn }: { id: string; gridRow: number; gridColumn: number }) =>
+      apiRequest("PATCH", `/api/api-calls/${id}/grid-position`, { gridRow, gridColumn }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/api-calls"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to update position", variant: "destructive" });
+    },
+  });
+
   const reorderApiCallsMutation = useMutation({
     mutationFn: (ids: string[]) => apiRequest("POST", "/api/api-calls/reorder", { ids }),
     onMutate: async (ids: string[]) => {
@@ -478,38 +498,51 @@ export default function Dashboard() {
     },
   });
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const handleBookmarkDragStart = useCallback((e: React.DragEvent, bookmark: BookmarkType) => {
+    e.dataTransfer.setData("text/plain", bookmark.id);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggingItem({ type: 'bookmark', id: bookmark.id });
+  }, []);
 
-  const handleBookmarkDragEnd = (categoryId: string) => (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const categoryBookmarks = bookmarks.filter((b) => b.categoryId === categoryId);
-      const oldIndex = categoryBookmarks.findIndex((b) => b.id === active.id);
-      const newIndex = categoryBookmarks.findIndex((b) => b.id === over.id);
-      const newOrder = arrayMove(categoryBookmarks, oldIndex, newIndex);
-      reorderBookmarksMutation.mutate(newOrder.map((b) => b.id));
-    }
-  };
+  const handleApiCallDragStart = useCallback((e: React.DragEvent, apiCall: ApiCall) => {
+    e.dataTransfer.setData("text/plain", apiCall.id);
+    e.dataTransfer.effectAllowed = "move";
+    setDraggingItem({ type: 'apiCall', id: apiCall.id });
+  }, []);
 
-  const handleApiCallDragEnd = (categoryId: string) => (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const categoryApiCalls = apiCalls.filter((a) => a.categoryId === categoryId);
-      const oldIndex = categoryApiCalls.findIndex((a) => a.id === active.id);
-      const newIndex = categoryApiCalls.findIndex((a) => a.id === over.id);
-      const newOrder = arrayMove(categoryApiCalls, oldIndex, newIndex);
-      reorderApiCallsMutation.mutate(newOrder.map((a) => a.id));
+  const handleDragEnter = useCallback((categoryId: string, row: number, col: number) => {
+    setDropTarget({ row, col, categoryId });
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDropTarget(null);
+  }, []);
+
+  const handleDrop = useCallback((categoryId: string, row: number, col: number) => {
+    if (!draggingItem) return;
+    
+    if (draggingItem.type === 'bookmark') {
+      updateBookmarkGridPositionMutation.mutate({
+        id: draggingItem.id,
+        gridRow: row,
+        gridColumn: col,
+      });
+    } else {
+      updateApiCallGridPositionMutation.mutate({
+        id: draggingItem.id,
+        gridRow: row,
+        gridColumn: col,
+      });
     }
-  };
+    
+    setDraggingItem(null);
+    setDropTarget(null);
+  }, [draggingItem, updateBookmarkGridPositionMutation, updateApiCallGridPositionMutation]);
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingItem(null);
+    setDropTarget(null);
+  }, []);
 
   const executeApiCallMutation = useMutation({
     mutationFn: async (apiCall: ApiCall) => {
