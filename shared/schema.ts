@@ -159,6 +159,8 @@ export const bookmarkSchema = z.object({
   lastHealthCheck: z.string().nullable().default(null),
   sslExpiryDays: z.number().nullable().default(null),
   order: z.number().default(0),
+  gridRow: z.number().min(0).default(0),
+  gridColumn: z.number().min(0).default(0),
 });
 
 export const insertBookmarkSchema = bookmarkSchema.omit({ id: true, healthStatus: true, lastHealthCheck: true, sslExpiryDays: true });
@@ -177,6 +179,8 @@ export const apiCallSchema = z.object({
   icon: z.string().default("Zap"),
   color: z.string().default("default"),
   order: z.number().default(0),
+  gridRow: z.number().min(0).default(0),
+  gridColumn: z.number().min(0).default(0),
   responseValidationEnabled: z.boolean().default(false),
   responseValidationConfig: responseValidationConfigSchema.optional(),
 });
