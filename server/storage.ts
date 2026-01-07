@@ -16,6 +16,7 @@ export interface IStorage {
   createCategory(category: InsertCategory): Promise<Category>;
   updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category | undefined>;
   deleteCategory(id: string): Promise<boolean>;
+  reorderCategories(categoryIds: string[]): Promise<void>;
 
   getBookmarks(): Promise<Bookmark[]>;
   getBookmarksByCategory(categoryId: string): Promise<Bookmark[]>;
@@ -24,6 +25,7 @@ export interface IStorage {
   updateBookmark(id: string, bookmark: Partial<InsertBookmark>): Promise<Bookmark | undefined>;
   updateBookmarkHealth(id: string, status: "online" | "offline" | "unknown", sslExpiryDays?: number | null): Promise<Bookmark | undefined>;
   deleteBookmark(id: string): Promise<boolean>;
+  reorderBookmarks(bookmarkIds: string[]): Promise<void>;
 
   getApiCalls(): Promise<ApiCall[]>;
   getApiCallsByCategory(categoryId: string): Promise<ApiCall[]>;
@@ -31,6 +33,7 @@ export interface IStorage {
   createApiCall(apiCall: InsertApiCall): Promise<ApiCall>;
   updateApiCall(id: string, apiCall: Partial<InsertApiCall>): Promise<ApiCall | undefined>;
   deleteApiCall(id: string): Promise<boolean>;
+  reorderApiCalls(apiCallIds: string[]): Promise<void>;
 
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -180,6 +183,17 @@ export class YamlStorage implements IStorage {
     return result;
   }
 
+  async reorderCategories(categoryIds: string[]): Promise<void> {
+    categoryIds.forEach((id, index) => {
+      const category = this.categories.get(id);
+      if (category) {
+        category.order = index;
+        this.categories.set(id, category);
+      }
+    });
+    this.saveToFile();
+  }
+
   async getBookmarks(): Promise<Bookmark[]> {
     return Array.from(this.bookmarks.values()).sort((a, b) => a.order - b.order);
   }
@@ -237,6 +251,17 @@ export class YamlStorage implements IStorage {
     return result;
   }
 
+  async reorderBookmarks(bookmarkIds: string[]): Promise<void> {
+    bookmarkIds.forEach((id, index) => {
+      const bookmark = this.bookmarks.get(id);
+      if (bookmark) {
+        bookmark.order = index;
+        this.bookmarks.set(id, bookmark);
+      }
+    });
+    this.saveToFile();
+  }
+
   async getApiCalls(): Promise<ApiCall[]> {
     return Array.from(this.apiCalls.values()).sort((a, b) => a.order - b.order);
   }
@@ -272,6 +297,17 @@ export class YamlStorage implements IStorage {
     const result = this.apiCalls.delete(id);
     if (result) this.saveToFile();
     return result;
+  }
+
+  async reorderApiCalls(apiCallIds: string[]): Promise<void> {
+    apiCallIds.forEach((id, index) => {
+      const apiCall = this.apiCalls.get(id);
+      if (apiCall) {
+        apiCall.order = index;
+        this.apiCalls.set(id, apiCall);
+      }
+    });
+    this.saveToFile();
   }
 
   async getUser(id: string): Promise<User | undefined> {

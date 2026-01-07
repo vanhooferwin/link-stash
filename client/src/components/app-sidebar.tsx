@@ -89,58 +89,59 @@ function SortableCategoryItem({
   };
 
   return (
-    <SidebarMenuItem ref={setNodeRef} style={style}>
-      <div className="flex items-center w-full group/menu-item relative">
-        {editMode && (
-          <button
-            {...attributes}
-            {...listeners}
-            className="p-1 cursor-grab hover:bg-sidebar-accent rounded mr-1"
-            data-testid={`drag-handle-category-${category.id}`}
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <SidebarMenuItem>
+        <div className="flex items-center w-full group/menu-item relative">
+          {editMode && (
+            <button
+              {...listeners}
+              className="p-1 cursor-grab hover:bg-sidebar-accent rounded mr-1"
+              data-testid={`drag-handle-category-${category.id}`}
+            >
+              <GripVertical className="h-3 w-3 text-muted-foreground" />
+            </button>
+          )}
+          <SidebarMenuButton
+            onClick={onSelect}
+            isActive={isActive}
+            data-testid={`button-category-${category.id}`}
+            className="flex-1"
           >
-            <GripVertical className="h-3 w-3 text-muted-foreground" />
-          </button>
-        )}
-        <SidebarMenuButton
-          onClick={onSelect}
-          isActive={isActive}
-          data-testid={`button-category-${category.id}`}
-          className="flex-1"
-        >
-          <Folder className="h-4 w-4" />
-          <span>{category.name}</span>
-        </SidebarMenuButton>
-        {editMode && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0"
-                data-testid={`button-category-menu-${category.id}`}
-              >
-                <MoreHorizontal className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="right" align="start">
-              <DropdownMenuItem
-                onClick={onEdit}
-                data-testid={`button-edit-category-${category.id}`}
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={onDelete}
-                className="text-destructive focus:text-destructive"
-                data-testid={`button-delete-category-${category.id}`}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-      </div>
-    </SidebarMenuItem>
+            <Folder className="h-4 w-4" />
+            <span>{category.name}</span>
+          </SidebarMenuButton>
+          {editMode && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md p-0 outline-none transition-transform focus-visible:ring-2 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 md:opacity-0"
+                  data-testid={`button-category-menu-${category.id}`}
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="right" align="start">
+                <DropdownMenuItem
+                  onClick={onEdit}
+                  data-testid={`button-edit-category-${category.id}`}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={onDelete}
+                  className="text-destructive focus:text-destructive"
+                  data-testid={`button-delete-category-${category.id}`}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+      </SidebarMenuItem>
+    </div>
   );
 }
 

@@ -1,6 +1,23 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw } from "lucide-react";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw, GripVertical } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -29,6 +46,119 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall, Settings as SettingsType, SettingsUpdate } from "@shared/schema";
+
+interface SortableBookmarkCardProps {
+  bookmark: BookmarkType;
+  onEdit: (bookmark: BookmarkType) => void;
+  onDelete: (id: string) => void;
+  editMode: boolean;
+  isHealthAnimating: boolean;
+  hasBackgroundImage: boolean;
+}
+
+function SortableBookmarkCard({
+  bookmark,
+  onEdit,
+  onDelete,
+  editMode,
+  isHealthAnimating,
+  hasBackgroundImage,
+}: SortableBookmarkCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: bookmark.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} className="relative">
+      {editMode && (
+        <button
+          {...listeners}
+          className="absolute -top-1 -left-1 z-10 p-1 cursor-grab bg-background/80 hover:bg-background rounded shadow-sm border"
+          data-testid={`drag-handle-bookmark-${bookmark.id}`}
+        >
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </button>
+      )}
+      <BookmarkCard
+        bookmark={bookmark}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        editMode={editMode}
+        isHealthAnimating={isHealthAnimating}
+        hasBackgroundImage={hasBackgroundImage}
+      />
+    </div>
+  );
+}
+
+interface SortableApiCallCardProps {
+  apiCall: ApiCall;
+  onEdit: (apiCall: ApiCall) => void;
+  onDelete: (id: string) => void;
+  onExecute: (apiCall: ApiCall) => void;
+  editMode: boolean;
+  isExecuting: boolean;
+  hasBackgroundImage: boolean;
+}
+
+function SortableApiCallCard({
+  apiCall,
+  onEdit,
+  onDelete,
+  onExecute,
+  editMode,
+  isExecuting,
+  hasBackgroundImage,
+}: SortableApiCallCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: apiCall.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} className="relative">
+      {editMode && (
+        <button
+          {...listeners}
+          className="absolute -top-1 -left-1 z-10 p-1 cursor-grab bg-background/80 hover:bg-background rounded shadow-sm border"
+          data-testid={`drag-handle-api-call-${apiCall.id}`}
+        >
+          <GripVertical className="h-3 w-3 text-muted-foreground" />
+        </button>
+      )}
+      <ApiCallCard
+        apiCall={apiCall}
+        onEdit={onEdit}
+        onDelete={onDelete}
+        onExecute={onExecute}
+        editMode={editMode}
+        isExecuting={isExecuting}
+        hasBackgroundImage={hasBackgroundImage}
+      />
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -253,6 +383,69 @@ export default function Dashboard() {
     },
   });
 
+  const reorderCategoriesMutation = useMutation({
+    mutationFn: (ids: string[]) => apiRequest("POST", "/api/categories/reorder", { ids }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to reorder categories", variant: "destructive" });
+    },
+  });
+
+  const reorderBookmarksMutation = useMutation({
+    mutationFn: (ids: string[]) => apiRequest("POST", "/api/bookmarks/reorder", { ids }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to reorder bookmarks", variant: "destructive" });
+    },
+  });
+
+  const reorderApiCallsMutation = useMutation({
+    mutationFn: (ids: string[]) => apiRequest("POST", "/api/api-calls/reorder", { ids }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/api-calls"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to reorder API calls", variant: "destructive" });
+    },
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleBookmarkDragEnd = (categoryId: string) => (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const categoryBookmarks = bookmarks.filter((b) => b.categoryId === categoryId);
+      const oldIndex = categoryBookmarks.findIndex((b) => b.id === active.id);
+      const newIndex = categoryBookmarks.findIndex((b) => b.id === over.id);
+      const newOrder = arrayMove(categoryBookmarks, oldIndex, newIndex);
+      reorderBookmarksMutation.mutate(newOrder.map((b) => b.id));
+    }
+  };
+
+  const handleApiCallDragEnd = (categoryId: string) => (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const categoryApiCalls = apiCalls.filter((a) => a.categoryId === categoryId);
+      const oldIndex = categoryApiCalls.findIndex((a) => a.id === active.id);
+      const newIndex = categoryApiCalls.findIndex((a) => a.id === over.id);
+      const newOrder = arrayMove(categoryApiCalls, oldIndex, newIndex);
+      reorderApiCallsMutation.mutate(newOrder.map((a) => a.id));
+    }
+  };
+
   const executeApiCallMutation = useMutation({
     mutationFn: async (apiCall: ApiCall) => {
       setExecutingApiCallId(apiCall.id);
@@ -412,6 +605,7 @@ export default function Dashboard() {
           onCreateCategory={(data) => createCategoryMutation.mutate(data)}
           onUpdateCategory={(id, data) => updateCategoryMutation.mutate({ id, data })}
           onDeleteCategory={(id) => deleteCategoryMutation.mutate(id)}
+          onReorderCategories={(ids) => reorderCategoriesMutation.mutate(ids)}
           isCreating={createCategoryMutation.isPending}
           isUpdating={updateCategoryMutation.isPending}
           editMode={editMode}
@@ -631,45 +825,67 @@ export default function Dashboard() {
                       <CollapsibleContent className="px-2 pt-4">
                         <div className="space-y-4">
                           {categoryBookmarks.length > 0 && (
-                            <div 
-                              className="grid gap-4"
-                              style={{ 
-                                gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
-                              }}
+                            <DndContext
+                              sensors={sensors}
+                              collisionDetection={closestCenter}
+                              onDragEnd={handleBookmarkDragEnd(category.id)}
                             >
-                              {categoryBookmarks.map((bookmark) => (
-                                <BookmarkCard
-                                  key={bookmark.id}
-                                  bookmark={bookmark}
-                                  onEdit={handleEditBookmark}
-                                  onDelete={(id) => deleteBookmarkMutation.mutate(id)}
-                                  editMode={editMode}
-                                  isHealthAnimating={animatingHealthId === bookmark.id}
-                                  hasBackgroundImage={!!backgroundImageUrl}
-                                />
-                              ))}
-                            </div>
+                              <SortableContext
+                                items={categoryBookmarks.map((b) => b.id)}
+                                strategy={rectSortingStrategy}
+                              >
+                                <div 
+                                  className="grid gap-4"
+                                  style={{ 
+                                    gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
+                                  }}
+                                >
+                                  {categoryBookmarks.map((bookmark) => (
+                                    <SortableBookmarkCard
+                                      key={bookmark.id}
+                                      bookmark={bookmark}
+                                      onEdit={handleEditBookmark}
+                                      onDelete={(id) => deleteBookmarkMutation.mutate(id)}
+                                      editMode={editMode}
+                                      isHealthAnimating={animatingHealthId === bookmark.id}
+                                      hasBackgroundImage={!!backgroundImageUrl}
+                                    />
+                                  ))}
+                                </div>
+                              </SortableContext>
+                            </DndContext>
                           )}
                           {categoryApiCalls.length > 0 && (
-                            <div 
-                              className="grid gap-4"
-                              style={{ 
-                                gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
-                              }}
+                            <DndContext
+                              sensors={sensors}
+                              collisionDetection={closestCenter}
+                              onDragEnd={handleApiCallDragEnd(category.id)}
                             >
-                              {categoryApiCalls.map((apiCall) => (
-                                <ApiCallCard
-                                  key={apiCall.id}
-                                  apiCall={apiCall}
-                                  onEdit={handleEditApiCall}
-                                  onDelete={(id) => deleteApiCallMutation.mutate(id)}
-                                  onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
-                                  editMode={editMode}
-                                  isExecuting={executingApiCallId === apiCall.id}
-                                  hasBackgroundImage={!!backgroundImageUrl}
-                                />
-                              ))}
-                            </div>
+                              <SortableContext
+                                items={categoryApiCalls.map((a) => a.id)}
+                                strategy={rectSortingStrategy}
+                              >
+                                <div 
+                                  className="grid gap-4"
+                                  style={{ 
+                                    gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
+                                  }}
+                                >
+                                  {categoryApiCalls.map((apiCall) => (
+                                    <SortableApiCallCard
+                                      key={apiCall.id}
+                                      apiCall={apiCall}
+                                      onEdit={handleEditApiCall}
+                                      onDelete={(id) => deleteApiCallMutation.mutate(id)}
+                                      onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
+                                      editMode={editMode}
+                                      isExecuting={executingApiCallId === apiCall.id}
+                                      hasBackgroundImage={!!backgroundImageUrl}
+                                    />
+                                  ))}
+                                </div>
+                              </SortableContext>
+                            </DndContext>
                           )}
                         </div>
                       </CollapsibleContent>
