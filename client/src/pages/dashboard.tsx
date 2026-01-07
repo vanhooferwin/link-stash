@@ -340,7 +340,7 @@ export default function Dashboard() {
           <header className={cn(
             "flex items-center justify-between gap-4 p-4 border-b",
             backgroundImageUrl
-              ? "bg-background/70 backdrop-blur-xl"
+              ? "glass-header"
               : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
           )}>
             <div className="flex items-center gap-4 flex-1">
