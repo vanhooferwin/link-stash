@@ -61,7 +61,7 @@ bookmarks:
     description: ''
     url: https://mpluz-my.sharepoint.com/
     icon: OneDrive
-    color: default
+    color: gradient-pink-purple
     categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
     healthCheckEnabled: false
     order: 2
