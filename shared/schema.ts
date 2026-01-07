@@ -1,43 +1,81 @@
 import { z } from "zod";
 
-export const AVAILABLE_ICONS = [
-  // General
-  "Globe", "Home", "Star", "Heart", "Bookmark", "Folder", "File", "Code",
-  "Terminal", "Database", "Server", "Cloud", "Monitor", "Smartphone", "Laptop",
-  "Wifi", "Lock", "Key", "Shield", "Settings", "Cog", "Tool", "Wrench",
-  "Hammer", "Zap", "Lightning", "Flame", "Sun", "Moon", "CloudSun",
-  "Music", "Video", "Image", "Camera", "Mic", "Headphones", "Speaker",
-  "Mail", "MessageSquare", "Send", "Inbox", "Bell", "Calendar", "Clock",
-  "MapPin", "Navigation", "Compass", "Map", "Users", "User", "UserPlus",
-  "Building", "Store", "ShoppingCart", "CreditCard", "DollarSign", "Wallet",
-  "TrendingUp", "BarChart", "PieChart", "Activity", "Target", "Award",
-  "Gift", "Package", "Truck", "Plane", "Car", "Bike", "Train",
-  "Coffee", "Utensils", "Pizza", "Apple", "Leaf", "Tree", "Flower",
-  "Book", "Newspaper", "FileText", "ClipboardList", "CheckSquare", "List",
-  "Grid", "Layers", "Cube", "Hexagon", "Circle", "Square", "Triangle",
-  "Link", "ExternalLink", "Share", "Download", "Upload", "Refresh", "Search",
-  "Eye", "EyeOff", "Edit", "Trash", "Plus", "Minus", "X", "Check",
-  // Cloud & Infrastructure
-  "CloudUpload", "CloudDownload", "HardDrive", "Cpu", "Router", "Network",
-  "Container", "Blocks", "TerminalSquare", "KeyRound", "ShieldCheck", "Bug",
-  // Brand icons (react-icons/si)
-  "Github", "Gitlab", "Bitbucket", "Jira", "Confluence", "Trello",
-  "Slack", "Discord", "Teams", "Zoom",
-  "Aws", "Azure", "GoogleCloud", "DigitalOcean", "Cloudflare",
-  "Docker", "Kubernetes", "Jenkins", "CircleCi", "TravisCi",
-  "Npm", "Yarn", "Nodejs", "Python", "Java", "Go", "Rust", "Php",
-  "React", "Vue", "Angular", "Svelte", "Nextjs",
-  "Mongodb", "Postgresql", "Mysql", "Redis", "Elasticsearch",
-  "OneDrive", "GoogleDrive", "Dropbox", "Box",
-  "Notion", "Figma", "Miro", "Airtable",
-  "Stripe", "Paypal", "Shopify",
-  "Twitter", "Linkedin", "Facebook", "Instagram", "Youtube", "Tiktok",
-  "Spotify", "Netflix", "Twitch", "Steam",
-  "Apple", "Microsoft", "Google", "Amazon",
-  "Ssh", "Ftp", "Api", "Webhook", "Rss"
-] as const;
+export const ICON_CATEGORIES = {
+  "DevOps & CI/CD": [
+    "Github", "Gitlab", "Bitbucket", "Jira", "Confluence", "Jenkins", "CircleCi", 
+    "TravisCi", "Ansible", "Terraform", "Puppet", "Chef", "ArgoCD", "GitOps",
+    "Pipeline", "Workflow", "GitBranch", "GitMerge", "GitPullRequest", "GitCommit"
+  ],
+  "Cloud & Infrastructure": [
+    "Aws", "Azure", "GoogleCloud", "DigitalOcean", "Cloudflare", "Heroku", "Vercel", "Netlify",
+    "Cloud", "CloudUpload", "CloudDownload", "Server", "ServerCog", "ServerCrash",
+    "Datacenter", "Rack", "Region", "Zone"
+  ],
+  "Containers & Orchestration": [
+    "Docker", "Kubernetes", "Helm", "Container", "Blocks", "Layers",
+    "Pod", "Deployment", "Service", "Namespace"
+  ],
+  "Storage & Databases": [
+    "Database", "HardDrive", "Disc", "Archive", "Folder", "FolderOpen", "FolderTree",
+    "S3", "Blob", "FileStorage", "ObjectStorage",
+    "Mongodb", "Postgresql", "Mysql", "Redis", "Elasticsearch", "Cassandra", "DynamoDB",
+    "Vault", "Bucket"
+  ],
+  "Compute & Processing": [
+    "Cpu", "Gpu", "Memory", "Chip", "Circuit", "Processor",
+    "Lambda", "Function", "Compute", "Instance", "VirtualMachine"
+  ],
+  "Network & Security": [
+    "Network", "Router", "Wifi", "Globe", "Link", "ExternalLink", "Share",
+    "LoadBalancer", "Gateway", "Firewall", "Cdn", "Dns", "Proxy", "Vpn",
+    "Lock", "Unlock", "Key", "KeyRound", "Shield", "ShieldCheck", "ShieldAlert",
+    "Fingerprint", "Scan", "Bug", "BugOff"
+  ],
+  "Monitoring & Logging": [
+    "Activity", "BarChart", "PieChart", "LineChart", "TrendingUp", "TrendingDown",
+    "Grafana", "Prometheus", "Datadog", "Splunk", "Kibana", "Loki",
+    "AlertCircle", "AlertTriangle", "Bell", "BellRing", "Gauge", "Meter", "Heartbeat"
+  ],
+  "Development Tools": [
+    "Code", "Terminal", "TerminalSquare", "Braces", "FileCode", "FileJson",
+    "Npm", "Yarn", "Pnpm", "Bun",
+    "Nodejs", "Python", "Java", "Go", "Rust", "Php", "Ruby", "Dotnet", "Typescript", "Javascript",
+    "React", "Vue", "Angular", "Svelte", "Nextjs", "Nuxt",
+    "Vscode", "Intellij", "Vim", "Neovim"
+  ],
+  "Collaboration & Communication": [
+    "Slack", "Discord", "Teams", "Zoom", "Meet", "Mattermost",
+    "Notion", "Confluence", "Trello", "Asana", "Linear", "Monday",
+    "Figma", "Miro", "Airtable",
+    "Mail", "MessageSquare", "Send", "Inbox", "Users", "UserPlus"
+  ],
+  "General": [
+    "Home", "Star", "Heart", "Bookmark", "File", "FileText", "ClipboardList",
+    "Calendar", "Clock", "MapPin", "Navigation", "Compass", "Map",
+    "Settings", "Cog", "Wrench", "Hammer", "Tool",
+    "Zap", "Flame", "Sun", "Moon", "Coffee",
+    "Book", "Newspaper", "List", "Grid", "Search", "Eye", "Edit", "Trash", "Plus", "Check",
+    "Download", "Upload", "Refresh", "Package", "Box", "Cube", "Hexagon"
+  ],
+  "Payment & Commerce": [
+    "Stripe", "Paypal", "Shopify", "CreditCard", "DollarSign", "Wallet",
+    "ShoppingCart", "Store", "Building", "Receipt", "Invoice"
+  ],
+  "Social & Media": [
+    "Twitter", "Linkedin", "Facebook", "Instagram", "Youtube", "Tiktok",
+    "Spotify", "Netflix", "Twitch", "Steam", "Reddit", "HackerNews",
+    "Music", "Video", "Image", "Camera", "Mic", "Headphones"
+  ],
+  "Storage Services": [
+    "GoogleDrive", "OneDrive", "Dropbox", "Box", "Backblaze", "Wasabi", "Minio"
+  ]
+} as const;
 
-export type IconName = typeof AVAILABLE_ICONS[number];
+// Flatten all icons into a single array
+export const AVAILABLE_ICONS = Object.values(ICON_CATEGORIES).flat();
+
+export type IconName = string;
+export type IconCategory = keyof typeof ICON_CATEGORIES;
 
 export const CARD_COLORS = [
   { id: "default", name: "Default", bg: "", border: "" },
@@ -135,16 +173,16 @@ export const apiResponseSchema = z.object({
 
 export type ApiResponse = z.infer<typeof apiResponseSchema>;
 
+export const settingsSchema = z.object({
+  backgroundImageUrl: z.string().optional(),
+});
+
+export type Settings = z.infer<typeof settingsSchema>;
+
 export const users = {} as any;
 export const insertUserSchema = z.object({
   username: z.string(),
   password: z.string(),
 });
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = { id: string; username: string; password: string };
-
-export const settingsSchema = z.object({
-  backgroundImageUrl: z.string().optional(),
-});
-
-export type Settings = z.infer<typeof settingsSchema>;
+export type User = InsertUser & { id: number };

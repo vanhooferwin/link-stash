@@ -35,16 +35,16 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T12:17:09.576Z'
     sslExpiryDays: null
-  - name: SiteOn
-    description: Place to be
-    url: https://www.siteon.nl
+  - name: JIRA
+    description: Tickets & more
+    url: https://mpluz-software.atlassian.net/jira/software/c/projects/MP/boards/1
     icon: Globe
     color: blue
     categoryId: f4fac5cc-6826-4a45-8e12-442fd109a749
     healthCheckEnabled: true
     healthCheckConfig:
       expectedStatus: 200
-      checkSsl: true
+      checkSsl: false
     order: 0
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
     healthStatus: online
