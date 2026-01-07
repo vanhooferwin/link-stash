@@ -106,6 +106,7 @@ export const categorySchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required"),
   order: z.number().default(0),
+  columns: z.number().min(2).max(8).default(4),
 });
 
 export const insertCategorySchema = categorySchema.omit({ id: true });
