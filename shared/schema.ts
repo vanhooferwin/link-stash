@@ -21,6 +21,20 @@ export const AVAILABLE_ICONS = [
 
 export type IconName = typeof AVAILABLE_ICONS[number];
 
+export const CARD_COLORS = [
+  { id: "default", name: "Default", bg: "", border: "" },
+  { id: "blue", name: "Blue", bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800" },
+  { id: "green", name: "Green", bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800" },
+  { id: "purple", name: "Purple", bg: "bg-purple-50 dark:bg-purple-950/30", border: "border-purple-200 dark:border-purple-800" },
+  { id: "orange", name: "Orange", bg: "bg-orange-50 dark:bg-orange-950/30", border: "border-orange-200 dark:border-orange-800" },
+  { id: "pink", name: "Pink", bg: "bg-pink-50 dark:bg-pink-950/30", border: "border-pink-200 dark:border-pink-800" },
+  { id: "cyan", name: "Cyan", bg: "bg-cyan-50 dark:bg-cyan-950/30", border: "border-cyan-200 dark:border-cyan-800" },
+  { id: "yellow", name: "Yellow", bg: "bg-yellow-50 dark:bg-yellow-950/30", border: "border-yellow-200 dark:border-yellow-800" },
+  { id: "red", name: "Red", bg: "bg-red-50 dark:bg-red-950/30", border: "border-red-200 dark:border-red-800" },
+] as const;
+
+export type CardColorId = typeof CARD_COLORS[number]["id"];
+
 export const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 export type HttpMethod = typeof HTTP_METHODS[number];
 
@@ -40,6 +54,7 @@ export const bookmarkSchema = z.object({
   description: z.string().optional(),
   url: z.string().url("Must be a valid URL"),
   icon: z.string().default("Globe"),
+  color: z.string().default("default"),
   categoryId: z.string(),
   healthCheckEnabled: z.boolean().default(false),
   healthStatus: z.enum(["online", "offline", "unknown"]).default("unknown"),
