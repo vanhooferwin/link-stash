@@ -174,10 +174,14 @@ export const apiResponseSchema = z.object({
 export type ApiResponse = z.infer<typeof apiResponseSchema>;
 
 export const settingsSchema = z.object({
-  backgroundImageUrl: z.string().optional(),
+  backgroundImageUrl: z.string().optional().nullable(),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;
+
+export type SettingsUpdate = {
+  backgroundImageUrl?: string | null;
+};
 
 export const users = {} as any;
 export const insertUserSchema = z.object({

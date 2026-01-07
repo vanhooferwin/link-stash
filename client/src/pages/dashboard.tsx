@@ -26,7 +26,7 @@ import { CommandPalette } from "@/components/command-palette";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall, Settings as SettingsType } from "@shared/schema";
+import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall, Settings as SettingsType, SettingsUpdate } from "@shared/schema";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -64,7 +64,7 @@ export default function Dashboard() {
   });
 
   const updateSettingsMutation = useMutation({
-    mutationFn: (data: Partial<SettingsType>) => apiRequest("PATCH", "/api/settings", data),
+    mutationFn: (data: SettingsUpdate) => apiRequest("PATCH", "/api/settings", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
       toast({ title: "Settings updated" });
@@ -498,7 +498,7 @@ export default function Dashboard() {
                 variant="outline"
                 onClick={() => {
                   setBgInputValue("");
-                  updateSettingsMutation.mutate({ backgroundImageUrl: undefined });
+                  updateSettingsMutation.mutate({ backgroundImageUrl: null });
                 }}
                 disabled={updateSettingsMutation.isPending}
                 data-testid="button-clear-background"
