@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye } from "lucide-react";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,6 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -19,6 +24,7 @@ import { ApiCallModal } from "@/components/api-call-modal";
 import { ResponseModal } from "@/components/response-modal";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import type { Category, Bookmark as BookmarkType, ApiCall, ApiResponse, InsertBookmark, InsertApiCall } from "@shared/schema";
 
 export default function Dashboard() {
@@ -31,10 +37,10 @@ export default function Dashboard() {
   const [editingApiCall, setEditingApiCall] = useState<ApiCall | null>(null);
   const [responseModalOpen, setResponseModalOpen] = useState(false);
   const [currentResponse, setCurrentResponse] = useState<{ apiCall: ApiCall; response: ApiResponse | null; error: string | null } | null>(null);
-  const [checkingHealthId, setCheckingHealthId] = useState<string | null>(null);
   const [executingApiCallId, setExecutingApiCallId] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [animatingHealthId, setAnimatingHealthId] = useState<string | null>(null);
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -122,22 +128,6 @@ export default function Dashboard() {
     },
   });
 
-  const healthCheckMutation = useMutation({
-    mutationFn: (id: string) => {
-      setCheckingHealthId(id);
-      return apiRequest("POST", `/api/bookmarks/${id}/health`);
-    },
-    onSuccess: (_data, id) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
-      setCheckingHealthId(null);
-      setAnimatingHealthId(id);
-      setTimeout(() => setAnimatingHealthId(null), 700);
-    },
-    onError: () => {
-      setCheckingHealthId(null);
-      toast({ title: "Health check failed", variant: "destructive" });
-    },
-  });
 
   const createApiCallMutation = useMutation({
     mutationFn: (data: InsertApiCall) => apiRequest("POST", "/api/api-calls", data),
@@ -212,6 +202,28 @@ export default function Dashboard() {
       apiCall.url.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const toggleCategory = (categoryId: string) => {
+    setCollapsedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  };
+
+  const getBookmarksByCategory = (categoryId: string) => 
+    filteredBookmarks.filter(b => b.categoryId === categoryId);
+
+  const getApiCallsByCategory = (categoryId: string) => 
+    filteredApiCalls.filter(a => a.categoryId === categoryId);
+
+  const categoriesWithItems = categories.filter(cat => 
+    getBookmarksByCategory(cat.id).length > 0 || getApiCallsByCategory(cat.id).length > 0
+  );
 
   const handleAddBookmark = () => {
     setEditingBookmark(null);
@@ -351,57 +363,73 @@ export default function Dashboard() {
                 )}
               </div>
             ) : (
-              <div className="space-y-8">
-                {filteredBookmarks.length > 0 && (
-                  <section>
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Bookmark className="h-5 w-5" />
-                      Bookmarks
-                      <span className="text-sm font-normal text-muted-foreground">
-                        ({filteredBookmarks.length})
-                      </span>
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {filteredBookmarks.map((bookmark) => (
-                        <BookmarkCard
-                          key={bookmark.id}
-                          bookmark={bookmark}
-                          onEdit={handleEditBookmark}
-                          onDelete={(id) => deleteBookmarkMutation.mutate(id)}
-                          onHealthCheck={(id) => healthCheckMutation.mutate(id)}
-                          isCheckingHealth={checkingHealthId === bookmark.id}
-                          editMode={editMode}
-                          isHealthAnimating={animatingHealthId === bookmark.id}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                )}
+              <div className="space-y-6">
+                {categoriesWithItems.map((category) => {
+                  const categoryBookmarks = getBookmarksByCategory(category.id);
+                  const categoryApiCalls = getApiCallsByCategory(category.id);
+                  const isCollapsed = collapsedCategories.has(category.id);
+                  const totalItems = categoryBookmarks.length + categoryApiCalls.length;
 
-                {filteredApiCalls.length > 0 && (
-                  <section>
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                      <Zap className="h-5 w-5" />
-                      API Calls
-                      <span className="text-sm font-normal text-muted-foreground">
-                        ({filteredApiCalls.length})
-                      </span>
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {filteredApiCalls.map((apiCall) => (
-                        <ApiCallCard
-                          key={apiCall.id}
-                          apiCall={apiCall}
-                          onEdit={handleEditApiCall}
-                          onDelete={(id) => deleteApiCallMutation.mutate(id)}
-                          onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
-                          editMode={editMode}
-                          isExecuting={executingApiCallId === apiCall.id}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                )}
+                  return (
+                    <Collapsible
+                      key={category.id}
+                      open={!isCollapsed}
+                      onOpenChange={() => toggleCategory(category.id)}
+                    >
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-between p-4 h-auto hover-elevate"
+                          data-testid={`button-toggle-category-${category.id}`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-semibold">{category.name}</span>
+                            <span className="text-sm text-muted-foreground">
+                              ({totalItems})
+                            </span>
+                          </div>
+                          <ChevronDown className={cn(
+                            "h-5 w-5 transition-transform",
+                            isCollapsed && "-rotate-90"
+                          )} />
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-2 pt-2">
+                        <div className="space-y-4">
+                          {categoryBookmarks.length > 0 && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                              {categoryBookmarks.map((bookmark) => (
+                                <BookmarkCard
+                                  key={bookmark.id}
+                                  bookmark={bookmark}
+                                  onEdit={handleEditBookmark}
+                                  onDelete={(id) => deleteBookmarkMutation.mutate(id)}
+                                  editMode={editMode}
+                                  isHealthAnimating={animatingHealthId === bookmark.id}
+                                />
+                              ))}
+                            </div>
+                          )}
+                          {categoryApiCalls.length > 0 && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                              {categoryApiCalls.map((apiCall) => (
+                                <ApiCallCard
+                                  key={apiCall.id}
+                                  apiCall={apiCall}
+                                  onEdit={handleEditApiCall}
+                                  onDelete={(id) => deleteApiCallMutation.mutate(id)}
+                                  onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
+                                  editMode={editMode}
+                                  isExecuting={executingApiCallId === apiCall.id}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  );
+                })}
               </div>
             )}
           </main>
