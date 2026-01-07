@@ -19,11 +19,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Category } from "@shared/schema";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   order: z.number().default(0),
+  columns: z.number().min(2).max(8).default(4),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -48,6 +56,7 @@ export function CategoryModal({
     defaultValues: {
       name: "",
       order: 0,
+      columns: 4,
     },
   });
 
@@ -56,11 +65,13 @@ export function CategoryModal({
       form.reset({
         name: category.name,
         order: category.order,
+        columns: category.columns ?? 4,
       });
     } else {
       form.reset({
         name: "",
         order: 0,
+        columns: 4,
       });
     }
   }, [category, form]);
@@ -93,6 +104,34 @@ export function CategoryModal({
                       data-testid="input-category-name"
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="columns"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Columns</FormLabel>
+                  <Select
+                    value={String(field.value)}
+                    onValueChange={(value) => field.onChange(Number(value))}
+                  >
+                    <FormControl>
+                      <SelectTrigger data-testid="select-category-columns">
+                        <SelectValue placeholder="Select columns" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {[2, 3, 4, 5, 6, 7, 8].map((num) => (
+                        <SelectItem key={num} value={String(num)}>
+                          {num} columns
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

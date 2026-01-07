@@ -631,7 +631,12 @@ export default function Dashboard() {
                       <CollapsibleContent className="px-2 pt-4">
                         <div className="space-y-4">
                           {categoryBookmarks.length > 0 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <div 
+                              className="grid gap-4"
+                              style={{ 
+                                gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
+                              }}
+                            >
                               {categoryBookmarks.map((bookmark) => (
                                 <BookmarkCard
                                   key={bookmark.id}
@@ -646,7 +651,12 @@ export default function Dashboard() {
                             </div>
                           )}
                           {categoryApiCalls.length > 0 && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <div 
+                              className="grid gap-4"
+                              style={{ 
+                                gridTemplateColumns: `repeat(${category.columns ?? 4}, minmax(0, 1fr))` 
+                              }}
+                            >
                               {categoryApiCalls.map((apiCall) => (
                                 <ApiCallCard
                                   key={apiCall.id}
