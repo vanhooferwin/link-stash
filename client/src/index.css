@@ -312,10 +312,10 @@
 
 /* Glass effect when background image is present */
 [data-has-bg="true"] [data-slot="sidebar-inner"] {
-  background-color: rgba(0, 0, 0, 0.25) !important;
+  background-color: rgba(40, 40, 45, 0.35) !important;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
 
 [data-has-bg="true"] [data-slot="sidebar-container"] {
@@ -323,15 +323,15 @@
 }
 
 [data-has-bg="true"] .glass-header {
-  background-color: rgba(0, 0, 0, 0.25) !important;
+  background-color: rgba(40, 40, 45, 0.35) !important;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
 
 /* Glass cards when background image is present */
 [data-has-bg="true"] .glass-card {
-  background-color: rgba(0, 0, 0, 0.2) !important;
+  background-color: rgba(40, 40, 45, 0.3) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-color: rgba(255, 255, 255, 0.15) !important;
