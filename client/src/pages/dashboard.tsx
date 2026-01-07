@@ -197,7 +197,15 @@ function BookmarkGrid({
             );
           }
           
-          if (!editMode) return null;
+          if (!editMode) {
+            return (
+              <div
+                key={`empty-${row}-${col}`}
+                className="min-h-[80px] pointer-events-none"
+                aria-hidden="true"
+              />
+            );
+          }
           
           return (
             <div
@@ -301,7 +309,15 @@ function ApiCallGrid({
             );
           }
           
-          if (!editMode) return null;
+          if (!editMode) {
+            return (
+              <div
+                key={`empty-${row}-${col}`}
+                className="min-h-[80px] pointer-events-none"
+                aria-hidden="true"
+              />
+            );
+          }
           
           return (
             <div

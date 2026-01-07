@@ -27,6 +27,8 @@ bookmarks:
       expectedStatus: 200
       checkSsl: true
     sslExpiryDays: 236
+    gridRow: 0
+    gridColumn: 0
   - name: OK-27
     description: Touch
     url: http://10.74.27.11:3000
@@ -42,6 +44,8 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:26:03.745Z'
     sslExpiryDays: null
+    gridRow: 0
+    gridColumn: 1
   - name: JIRA
     description: Tickets & more
     url: https://mpluz-software.atlassian.net/jira/software/c/projects/MP/boards/1
@@ -57,6 +61,8 @@ bookmarks:
     healthStatus: online
     lastHealthCheck: '2026-01-07T17:32:35.111Z'
     sslExpiryDays: null
+    gridRow: 0
+    gridColumn: 2
   - name: SharePoint
     description: ''
     url: https://mpluz-my.sharepoint.com/
@@ -69,6 +75,8 @@ bookmarks:
     healthStatus: unknown
     lastHealthCheck: null
     sslExpiryDays: null
+    gridRow: 0
+    gridColumn: 3
   - name: 'Videomanager '
     description: Acceptatie / Test
     url: http://10.74.27.5:3008
@@ -84,6 +92,8 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:00:18.217Z'
     sslExpiryDays: null
+    gridRow: 0
+    gridColumn: 2
   - name: OK-3
     description: Touch
     url: http://10.74.26.5:3000
@@ -99,6 +109,8 @@ bookmarks:
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
+    gridRow: 0
+    gridColumn: 0
   - name: Admin
     description: Acceptatie / Test
     url: http://10.74.27.5:3010
@@ -114,6 +126,8 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:26:34.672Z'
     sslExpiryDays: null
+    gridRow: 1
+    gridColumn: 2
   - name: OK-27
     description: NMS
     url: https://10.74.27.11:8443/nms
@@ -129,6 +143,8 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:32:20.987Z'
     sslExpiryDays: null
+    gridRow: 1
+    gridColumn: 1
   - name: Confluence
     description: Knowledge base & articles
     url: https://mpluz-software.atlassian.net/wiki/spaces/SD/overview
@@ -141,6 +157,8 @@ bookmarks:
     healthStatus: unknown
     lastHealthCheck: null
     sslExpiryDays: null
+    gridRow: 0
+    gridColumn: 1
   - name: OK-3
     description: NMS
     url: https://10.74.26.133:8443/nms
@@ -156,6 +174,8 @@ bookmarks:
     healthStatus: offline
     lastHealthCheck: '2026-01-07T17:55:13.779Z'
     sslExpiryDays: null
+    gridRow: 1
+    gridColumn: 0
 apiCalls: []
 users: []
 settings:
