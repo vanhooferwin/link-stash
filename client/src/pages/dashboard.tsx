@@ -69,8 +69,6 @@ export default function Dashboard() {
     mutationFn: (data: SettingsUpdate) => apiRequest("PATCH", "/api/settings", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
-      toast({ title: "Settings updated" });
-      setShowBgInput(false);
     },
     onError: () => {
       toast({ title: "Failed to update settings", variant: "destructive" });
@@ -78,7 +76,22 @@ export default function Dashboard() {
   });
 
   const handleSetBackground = () => {
-    updateSettingsMutation.mutate({ backgroundImageUrl: bgInputValue || undefined });
+    updateSettingsMutation.mutate({ backgroundImageUrl: bgInputValue || undefined }, {
+      onSuccess: () => {
+        toast({ title: "Background updated" });
+        setShowBgInput(false);
+      }
+    });
+  };
+
+  const handleClearBackground = () => {
+    setBgInputValue("");
+    updateSettingsMutation.mutate({ backgroundImageUrl: null }, {
+      onSuccess: () => {
+        toast({ title: "Background cleared" });
+        setShowBgInput(false);
+      }
+    });
   };
 
   const backgroundImageUrl = settings?.backgroundImageUrl;
@@ -505,10 +518,7 @@ export default function Dashboard() {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    setBgInputValue("");
-                    updateSettingsMutation.mutate({ backgroundImageUrl: null });
-                  }}
+                  onClick={handleClearBackground}
                   disabled={updateSettingsMutation.isPending}
                   data-testid="button-clear-background"
                 >
