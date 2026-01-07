@@ -539,7 +539,10 @@ export default function Dashboard() {
                       <CollapsibleTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="w-full justify-between p-4 h-auto hover-elevate"
+                          className={cn(
+                            "w-full justify-between p-4 h-auto hover-elevate",
+                            backgroundImageUrl && "glass-category"
+                          )}
                           data-testid={`button-toggle-category-${category.id}`}
                         >
                           <div className="flex items-center gap-2">
