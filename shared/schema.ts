@@ -66,6 +66,15 @@ export const insertCategorySchema = categorySchema.omit({ id: true });
 export type Category = z.infer<typeof categorySchema>;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 
+export const healthCheckConfigSchema = z.object({
+  url: z.string().optional(),
+  expectedStatus: z.number().default(200),
+  jsonKey: z.string().optional(),
+  jsonValue: z.string().optional(),
+});
+
+export type HealthCheckConfig = z.infer<typeof healthCheckConfigSchema>;
+
 export const bookmarkSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Name is required"),
@@ -75,6 +84,7 @@ export const bookmarkSchema = z.object({
   color: z.string().default("default"),
   categoryId: z.string(),
   healthCheckEnabled: z.boolean().default(false),
+  healthCheckConfig: healthCheckConfigSchema.optional(),
   healthStatus: z.enum(["online", "offline", "unknown"]).default("unknown"),
   lastHealthCheck: z.string().nullable().default(null),
   order: z.number().default(0),

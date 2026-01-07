@@ -28,9 +28,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { IconPicker } from "./icon-picker";
 import { ColorPicker } from "./color-picker";
-import type { Bookmark, Category } from "@shared/schema";
+import { ChevronDown } from "lucide-react";
+import type { Bookmark, Category, HealthCheckConfig } from "@shared/schema";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -40,6 +46,12 @@ const formSchema = z.object({
   color: z.string().default("default"),
   categoryId: z.string().min(1, "Category is required"),
   healthCheckEnabled: z.boolean().default(false),
+  healthCheckConfig: z.object({
+    url: z.string().optional(),
+    expectedStatus: z.number().default(200),
+    jsonKey: z.string().optional(),
+    jsonValue: z.string().optional(),
+  }).optional(),
   order: z.number().default(0),
 });
 
@@ -72,9 +84,17 @@ export function BookmarkModal({
       color: "default",
       categoryId: categories[0]?.id || "",
       healthCheckEnabled: false,
+      healthCheckConfig: {
+        url: "",
+        expectedStatus: 200,
+        jsonKey: "",
+        jsonValue: "",
+      },
       order: 0,
     },
   });
+
+  const healthCheckEnabled = form.watch("healthCheckEnabled");
 
   useEffect(() => {
     if (bookmark) {
@@ -86,6 +106,12 @@ export function BookmarkModal({
         color: bookmark.color || "default",
         categoryId: bookmark.categoryId,
         healthCheckEnabled: bookmark.healthCheckEnabled,
+        healthCheckConfig: {
+          url: bookmark.healthCheckConfig?.url || "",
+          expectedStatus: bookmark.healthCheckConfig?.expectedStatus || 200,
+          jsonKey: bookmark.healthCheckConfig?.jsonKey || "",
+          jsonValue: bookmark.healthCheckConfig?.jsonValue || "",
+        },
         order: bookmark.order,
       });
     } else {
@@ -97,18 +123,34 @@ export function BookmarkModal({
         color: "default",
         categoryId: categories[0]?.id || "",
         healthCheckEnabled: false,
+        healthCheckConfig: {
+          url: "",
+          expectedStatus: 200,
+          jsonKey: "",
+          jsonValue: "",
+        },
         order: 0,
       });
     }
   }, [bookmark, categories, form]);
 
   const handleSubmit = (data: FormValues) => {
-    onSubmit(data);
+    const cleanedConfig: HealthCheckConfig | undefined = data.healthCheckEnabled ? {
+      url: data.healthCheckConfig?.url || undefined,
+      expectedStatus: data.healthCheckConfig?.expectedStatus || 200,
+      jsonKey: data.healthCheckConfig?.jsonKey || undefined,
+      jsonValue: data.healthCheckConfig?.jsonValue || undefined,
+    } : undefined;
+    
+    onSubmit({
+      ...data,
+      healthCheckConfig: cleanedConfig,
+    });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle data-testid="text-bookmark-modal-title">
             {bookmark ? "Edit Bookmark" : "Add Bookmark"}
@@ -239,7 +281,7 @@ export function BookmarkModal({
                   <div className="space-y-0.5">
                     <FormLabel className="text-base">Health Check</FormLabel>
                     <p className="text-sm text-muted-foreground">
-                      Periodically check if the URL is accessible
+                      Monitor if the service is accessible
                     </p>
                   </div>
                   <FormControl>
@@ -252,6 +294,96 @@ export function BookmarkModal({
                 </FormItem>
               )}
             />
+
+            {healthCheckEnabled && (
+              <Collapsible defaultOpen={!!bookmark?.healthCheckConfig?.url}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between" type="button">
+                    <span className="text-sm font-medium">Advanced Health Check Options</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-3 pt-2">
+                  <FormField
+                    control={form.control}
+                    name="healthCheckConfig.url"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Custom Endpoint (optional)</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://example.com/api/health"
+                            {...field}
+                            data-testid="input-health-url"
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">
+                          Leave empty to use the bookmark URL
+                        </p>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="healthCheckConfig.expectedStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Expected Status Code</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="200"
+                            {...field}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 200)}
+                            data-testid="input-health-status"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={form.control}
+                      name="healthCheckConfig.jsonKey"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>JSON Key (optional)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="success"
+                              {...field}
+                              data-testid="input-health-json-key"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="healthCheckConfig.jsonValue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Expected Value (optional)</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="OK"
+                              {...field}
+                              data-testid="input-health-json-value"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Check if the response contains a specific JSON key/value pair
+                  </p>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             <DialogFooter className="gap-2">
               <Button
