@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/collapsible";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { BookmarkCard } from "@/components/bookmark-card";
 import { ApiCallCard } from "@/components/api-call-card";
 import { BookmarkModal } from "@/components/bookmark-modal";
@@ -971,7 +970,6 @@ export default function Dashboard() {
               >
                 {editMode ? <Eye className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
               </Button>
-              <ThemeToggle />
             </div>
           </header>
 
