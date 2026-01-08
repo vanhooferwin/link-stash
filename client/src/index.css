@@ -390,3 +390,12 @@
   -webkit-backdrop-filter: blur(4px);
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
+
+/* Glass effect for toast notifications */
+[data-radix-toast-viewport] > li,
+[data-state="open"][role="status"] {
+  background-color: rgba(5, 5, 8, 0.5) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
