@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Image, RefreshCw, GripVertical, X } from "lucide-react";
+import { Plus, Search, Bookmark, Zap, Loader2, Settings, Eye, ChevronDown, Wrench, RefreshCw, GripVertical, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -950,7 +950,7 @@ export default function Dashboard() {
                   }}
                   data-testid="button-background-settings"
                 >
-                  <Image className="h-4 w-4" />
+                  <Wrench className="h-4 w-4" />
                 </Button>
               )}
               <Button
@@ -974,10 +974,7 @@ export default function Dashboard() {
           </header>
 
           {showBgInput && editMode && (
-            <div className={cn(
-              "flex flex-col gap-4 p-4 border-b",
-              backgroundImageUrl ? "bg-background/70 backdrop-blur-xl" : "bg-background"
-            )}>
+            <div className="flex flex-col gap-4 p-4 border-b bg-background/70 backdrop-blur-xl">
               <div className="flex items-center gap-2">
                 <Input
                   type="url"
