@@ -294,6 +294,9 @@ export default function Dashboard() {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [draggingItem, setDraggingItem] = useState<{ type: 'bookmark' | 'apiCall'; id: string } | null>(null);
   const [dropTarget, setDropTarget] = useState<{ row: number; col: number; categoryId: string } | null>(null);
+  const [localBrightness, setLocalBrightness] = useState(100);
+  const [localOpacity, setLocalOpacity] = useState(100);
+  const [localHealthInterval, setLocalHealthInterval] = useState(1);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -344,6 +347,15 @@ export default function Dashboard() {
   const backgroundBrightness = settings?.backgroundBrightness ?? 100;
   const backgroundOpacity = settings?.backgroundOpacity ?? 100;
   const healthCheckInterval = settings?.healthCheckInterval ?? 60;
+
+  // Sync local state when settings load
+  useEffect(() => {
+    if (settings) {
+      setLocalBrightness(settings.backgroundBrightness ?? 100);
+      setLocalOpacity(settings.backgroundOpacity ?? 100);
+      setLocalHealthInterval(Math.round((settings.healthCheckInterval ?? 60) / 60));
+    }
+  }, [settings]);
 
   // Function to refresh all health checks
   const refreshAllHealthChecks = async () => {
@@ -878,8 +890,8 @@ export default function Dashboard() {
             className="fixed inset-0 bg-cover bg-center bg-no-repeat -z-10"
             style={{ 
               backgroundImage: `url(${backgroundImageUrl})`,
-              filter: `brightness(${backgroundBrightness / 100})`,
-              opacity: backgroundOpacity / 100,
+              filter: `brightness(${localBrightness / 100})`,
+              opacity: localOpacity / 100,
             }}
           />
         )}
@@ -1006,28 +1018,28 @@ export default function Dashboard() {
                   <div className="flex items-center gap-3 flex-1">
                     <Label className="text-sm text-muted-foreground w-20">Brightness</Label>
                     <Slider
-                      value={[backgroundBrightness]}
-                      onValueChange={([value]) => updateSettingsMutation.mutate({ backgroundBrightness: value })}
+                      value={[localBrightness]}
+                      onValueChange={([value]) => setLocalBrightness(value)}
                       min={0}
                       max={200}
                       step={5}
                       className="flex-1"
                       data-testid="slider-brightness"
                     />
-                    <span className="text-sm text-muted-foreground w-12 text-right">{backgroundBrightness}%</span>
+                    <span className="text-sm text-muted-foreground w-12 text-right">{localBrightness}%</span>
                   </div>
                   <div className="flex items-center gap-3 flex-1">
                     <Label className="text-sm text-muted-foreground w-20">Opacity</Label>
                     <Slider
-                      value={[backgroundOpacity]}
-                      onValueChange={([value]) => updateSettingsMutation.mutate({ backgroundOpacity: value })}
+                      value={[localOpacity]}
+                      onValueChange={([value]) => setLocalOpacity(value)}
                       min={0}
                       max={100}
                       step={5}
                       className="flex-1"
                       data-testid="slider-opacity"
                     />
-                    <span className="text-sm text-muted-foreground w-12 text-right">{backgroundOpacity}%</span>
+                    <span className="text-sm text-muted-foreground w-12 text-right">{localOpacity}%</span>
                   </div>
                 </div>
               )}
@@ -1037,15 +1049,31 @@ export default function Dashboard() {
                   type="number"
                   min={1}
                   max={60}
-                  value={Math.round(healthCheckInterval / 60)}
+                  value={localHealthInterval}
                   onChange={(e) => {
                     const minutes = Math.max(1, Math.min(60, parseInt(e.target.value) || 1));
-                    updateSettingsMutation.mutate({ healthCheckInterval: minutes * 60 });
+                    setLocalHealthInterval(minutes);
                   }}
                   className="w-16 h-8 text-center"
                   data-testid="input-health-interval"
                 />
                 <span className="text-sm text-muted-foreground">min</span>
+                <Button
+                  onClick={() => {
+                    updateSettingsMutation.mutate({
+                      backgroundBrightness: localBrightness,
+                      backgroundOpacity: localOpacity,
+                      healthCheckInterval: localHealthInterval * 60,
+                    }, {
+                      onSuccess: () => toast({ title: "Settings saved" })
+                    });
+                  }}
+                  disabled={updateSettingsMutation.isPending}
+                  size="sm"
+                  data-testid="button-save-settings"
+                >
+                  Save
+                </Button>
               </div>
             </div>
           )}
