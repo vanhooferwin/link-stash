@@ -42,7 +42,7 @@ bookmarks:
     order: 2
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:55.904Z'
+    lastHealthCheck: '2026-01-08T09:34:14.737Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 1
@@ -93,7 +93,7 @@ bookmarks:
     order: 4
     id: e36bce13-16db-4644-afee-b41d6c6900f9
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:56.208Z'
+    lastHealthCheck: '2026-01-08T09:34:15.047Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 2
@@ -107,7 +107,7 @@ bookmarks:
     order: 0
     id: 7f691ed8-626b-481f-a095-ffdf91967917
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:52.383Z'
+    lastHealthCheck: '2026-01-08T09:34:10.839Z'
     sslExpiryDays: null
     healthCheckConfig:
       expectedStatus: 200
@@ -127,7 +127,7 @@ bookmarks:
     order: 5
     id: 092ab251-7708-4ab7-8649-7ea348188b80
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:57.369Z'
+    lastHealthCheck: '2026-01-08T09:34:16.249Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 2
@@ -144,7 +144,7 @@ bookmarks:
     order: 3
     id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:56.057Z'
+    lastHealthCheck: '2026-01-08T09:34:14.892Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 1
@@ -175,7 +175,7 @@ bookmarks:
     order: 1
     id: 6b1ceac8-0b82-456f-8cbd-f4fcc05305e7
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:55.752Z'
+    lastHealthCheck: '2026-01-08T09:34:14.579Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 0
@@ -194,7 +194,7 @@ bookmarks:
     gridColumn: 4
     id: 77d2ef54-9239-4b41-a56d-46f2925e3d4d
     healthStatus: online
-    lastHealthCheck: '2026-01-08T09:01:55.208Z'
+    lastHealthCheck: '2026-01-08T09:34:14.101Z'
     sslExpiryDays: null
   - name: Proxmox
     description: Virtualisatie platform
@@ -211,7 +211,7 @@ bookmarks:
     gridColumn: 0
     id: 84d6bece-184a-4705-bdf6-2bc33dfa20c5
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:55.449Z'
+    lastHealthCheck: '2026-01-08T09:34:14.266Z'
     sslExpiryDays: null
   - name: Switchboard
     description: Switch versions
@@ -225,7 +225,7 @@ bookmarks:
     gridColumn: 3
     id: 90edcc3d-4d2c-40d3-94d6-7386887978db
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:01:55.601Z'
+    lastHealthCheck: '2026-01-08T09:34:14.423Z'
     sslExpiryDays: null
     healthCheckConfig:
       expectedStatus: 200
@@ -254,4 +254,4 @@ settings:
   backgroundBrightness: 75
   backgroundOpacity: 80
   backgroundImageUrl: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=3544&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
-  healthCheckInterval: 1300
+  healthCheckInterval: 60
