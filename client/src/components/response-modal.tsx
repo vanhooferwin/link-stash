@@ -54,7 +54,7 @@ export function ResponseModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh]">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] glass-card border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 flex-wrap" data-testid="text-response-modal-title">
             {apiCall && (
@@ -117,7 +117,7 @@ export function ResponseModal({
                       <Copy className="h-4 w-4" />
                     )}
                   </Button>
-                  <ScrollArea className="h-[300px] rounded-lg border bg-muted/30">
+                  <ScrollArea className="h-[300px] rounded-lg border border-white/10 bg-black/20 backdrop-blur-sm">
                     <pre
                       className="p-4 text-sm font-mono whitespace-pre-wrap break-all"
                       data-testid="text-response-body"
@@ -129,7 +129,7 @@ export function ResponseModal({
               </TabsContent>
 
               <TabsContent value="headers" className="mt-4">
-                <ScrollArea className="h-[300px] rounded-lg border bg-muted/30">
+                <ScrollArea className="h-[300px] rounded-lg border border-white/10 bg-black/20 backdrop-blur-sm">
                   <div className="p-4 space-y-2">
                     {Object.entries(response.headers).map(([key, value]) => (
                       <div key={key} className="flex gap-2" data-testid={`header-${key}`}>
