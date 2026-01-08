@@ -52,6 +52,9 @@ const formSchema = z.object({
     jsonKey: z.string().optional(),
     jsonValue: z.string().optional(),
     checkSsl: z.boolean().default(false),
+    allowSelfSigned: z.boolean().default(false),
+    basicAuthUsername: z.string().optional(),
+    basicAuthPassword: z.string().optional(),
   }).optional(),
   order: z.number().default(0),
 });
@@ -91,6 +94,9 @@ export function BookmarkModal({
         jsonKey: "",
         jsonValue: "",
         checkSsl: false,
+        allowSelfSigned: false,
+        basicAuthUsername: "",
+        basicAuthPassword: "",
       },
       order: 0,
     },
@@ -114,6 +120,9 @@ export function BookmarkModal({
           jsonKey: bookmark.healthCheckConfig?.jsonKey || "",
           jsonValue: bookmark.healthCheckConfig?.jsonValue || "",
           checkSsl: bookmark.healthCheckConfig?.checkSsl || false,
+          allowSelfSigned: bookmark.healthCheckConfig?.allowSelfSigned || false,
+          basicAuthUsername: bookmark.healthCheckConfig?.basicAuthUsername || "",
+          basicAuthPassword: bookmark.healthCheckConfig?.basicAuthPassword || "",
         },
         order: bookmark.order,
       });
@@ -132,6 +141,9 @@ export function BookmarkModal({
           jsonKey: "",
           jsonValue: "",
           checkSsl: false,
+          allowSelfSigned: false,
+          basicAuthUsername: "",
+          basicAuthPassword: "",
         },
         order: 0,
       });
@@ -145,6 +157,9 @@ export function BookmarkModal({
       jsonKey: data.healthCheckConfig?.jsonKey || undefined,
       jsonValue: data.healthCheckConfig?.jsonValue || undefined,
       checkSsl: data.healthCheckConfig?.checkSsl || false,
+      allowSelfSigned: data.healthCheckConfig?.allowSelfSigned || false,
+      basicAuthUsername: data.healthCheckConfig?.basicAuthUsername || undefined,
+      basicAuthPassword: data.healthCheckConfig?.basicAuthPassword || undefined,
     } : undefined;
     
     onSubmit({
@@ -408,6 +423,73 @@ export function BookmarkModal({
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="healthCheckConfig.allowSelfSigned"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-between rounded-lg border p-3 pt-2">
+                        <div className="space-y-0.5">
+                          <FormLabel className="!mt-0">Allow Self-Signed Certificates</FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Accept self-signed or internal SSL certificates
+                          </p>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            data-testid="switch-allow-self-signed"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="space-y-3 rounded-lg border p-3">
+                    <FormLabel className="text-sm font-medium">Basic Authentication (optional)</FormLabel>
+                    <p className="text-xs text-muted-foreground -mt-2">
+                      Credentials for protected health check endpoints
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <FormField
+                        control={form.control}
+                        name="healthCheckConfig.basicAuthUsername"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Username</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="username"
+                                autoComplete="off"
+                                {...field}
+                                data-testid="input-basic-auth-username"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="healthCheckConfig.basicAuthPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Password</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="password"
+                                placeholder="password"
+                                autoComplete="off"
+                                {...field}
+                                data-testid="input-basic-auth-password"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                 </CollapsibleContent>
               </Collapsible>
             )}
