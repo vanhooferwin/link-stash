@@ -141,6 +141,9 @@ export const healthCheckConfigSchema = z.object({
   jsonKey: z.string().optional(),
   jsonValue: z.string().optional(),
   checkSsl: z.boolean().default(false),
+  allowSelfSigned: z.boolean().default(false),
+  basicAuthUsername: z.string().optional(),
+  basicAuthPassword: z.string().optional(),
 });
 
 export type HealthCheckConfig = z.infer<typeof healthCheckConfigSchema>;
