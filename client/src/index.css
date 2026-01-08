@@ -392,8 +392,8 @@
 }
 
 /* Glass effect for toast notifications */
-[data-radix-toast-viewport] > li,
-[data-state="open"][role="status"] {
+[data-radix-collection-item][data-state="open"],
+[data-state="open"].group {
   background-color: rgba(5, 5, 8, 0.5) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
