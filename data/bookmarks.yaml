@@ -42,7 +42,7 @@ bookmarks:
     order: 2
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:34.392Z'
+    lastHealthCheck: '2026-01-08T08:56:34.483Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 1
@@ -73,7 +73,7 @@ bookmarks:
     order: 2
     id: ae871d60-d137-465d-b5e6-9e6526dd6929
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:21:55.467Z'
+    lastHealthCheck: '2026-01-08T08:28:55.349Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 3
@@ -93,7 +93,7 @@ bookmarks:
     order: 4
     id: e36bce13-16db-4644-afee-b41d6c6900f9
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:34.707Z'
+    lastHealthCheck: '2026-01-08T08:56:34.829Z'
     sslExpiryDays: null
     gridRow: 0
     gridColumn: 2
@@ -107,7 +107,7 @@ bookmarks:
     order: 0
     id: 7f691ed8-626b-481f-a095-ffdf91967917
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:30.978Z'
+    lastHealthCheck: '2026-01-08T08:56:30.967Z'
     sslExpiryDays: null
     healthCheckConfig:
       expectedStatus: 200
@@ -127,7 +127,7 @@ bookmarks:
     order: 5
     id: 092ab251-7708-4ab7-8649-7ea348188b80
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:34.859Z'
+    lastHealthCheck: '2026-01-08T08:56:34.980Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 2
@@ -144,7 +144,7 @@ bookmarks:
     order: 3
     id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:34.550Z'
+    lastHealthCheck: '2026-01-08T08:56:34.669Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 1
@@ -175,7 +175,7 @@ bookmarks:
     order: 1
     id: 6b1ceac8-0b82-456f-8cbd-f4fcc05305e7
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:34.231Z'
+    lastHealthCheck: '2026-01-08T08:56:34.346Z'
     sslExpiryDays: null
     gridRow: 1
     gridColumn: 0
@@ -194,7 +194,7 @@ bookmarks:
     gridColumn: 4
     id: 77d2ef54-9239-4b41-a56d-46f2925e3d4d
     healthStatus: online
-    lastHealthCheck: '2026-01-08T08:22:33.918Z'
+    lastHealthCheck: '2026-01-08T08:56:34.054Z'
     sslExpiryDays: null
   - name: Proxmox
     description: Virtualisatie platform
@@ -211,9 +211,44 @@ bookmarks:
     gridColumn: 0
     id: 84d6bece-184a-4705-bdf6-2bc33dfa20c5
     healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:22:34.064Z'
+    lastHealthCheck: '2026-01-08T08:56:34.195Z'
     sslExpiryDays: null
-apiCalls: []
+  - name: Switchboard
+    description: Switch versions
+    url: http://10.74.27.5:8800/
+    icon: Settings
+    color: purple
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    healthCheckEnabled: true
+    order: 0
+    gridRow: 0
+    gridColumn: 3
+    id: 90edcc3d-4d2c-40d3-94d6-7386887978db
+    healthStatus: offline
+    lastHealthCheck: '2026-01-08T08:49:58.913Z'
+    sslExpiryDays: null
+    healthCheckConfig:
+      expectedStatus: 200
+      checkSsl: false
+apiCalls:
+  - name: TEst API
+    description: Running versions list
+    url: http://10.74.27.11:3000/versions
+    method: GET
+    headers: {}
+    body: ''
+    categoryId: fdbb9cf3-4255-4da3-93c7-81b73212adeb
+    icon: Zap
+    color: gradient-indigo-pink
+    order: 0
+    gridRow: 0
+    gridColumn: 4
+    responseValidationEnabled: false
+    responseValidationConfig:
+      expectedStatus: 200
+      jsonKey: ''
+      jsonValue: ''
+    id: b381dc2c-483b-453a-8055-25d52ee3baa0
 users: []
 settings:
   backgroundBrightness: 75

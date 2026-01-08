@@ -1,4 +1,4 @@
-import { Play, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,7 @@ import { CARD_COLORS, type ApiCall } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
 function getColorClasses(colorId: string) {
-  const color = CARD_COLORS.find(c => c.id === colorId);
+  const color = CARD_COLORS.find((c) => c.id === colorId);
   if (!color || colorId === "default") return { bg: "", border: "" };
   return { bg: color.bg, border: color.border };
 }
@@ -46,20 +46,17 @@ export function ApiCallCard({
     onDelete(apiCall.id);
   };
 
-  const handleExecute = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onExecute(apiCall);
-  };
-
   const colorClasses = getColorClasses(apiCall.color || "default");
 
   return (
     <Card
       className={cn(
-        "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate min-h-[88px]",
+        "group relative p-4 transition-all duration-200 hover:shadow-md hover-elevate min-h-[88px] cursor-pointer",
         hasBackgroundImage && !colorClasses.bg ? "glass-card" : colorClasses.bg,
-        colorClasses.border && `border ${colorClasses.border}`
+        colorClasses.border && `border ${colorClasses.border}`,
+        isExecuting && "opacity-75",
       )}
+      onClick={() => !isExecuting && onExecute(apiCall)}
       data-testid={`api-call-card-${apiCall.id}`}
     >
       {editMode && (
@@ -97,7 +94,10 @@ export function ApiCallCard({
 
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0 p-2 bg-accent/50 rounded-lg">
-          <DynamicIcon name={apiCall.icon} className="h-6 w-6 text-foreground" />
+          <DynamicIcon
+            name={apiCall.icon}
+            className="h-6 w-6 text-foreground"
+          />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -117,25 +117,7 @@ export function ApiCallCard({
               {apiCall.description}
             </p>
           )}
-          <p
-            className="text-xs font-mono text-muted-foreground mt-2 truncate"
-            data-testid={`text-api-call-url-${apiCall.id}`}
-          >
-            {apiCall.url}
-          </p>
         </div>
-      </div>
-
-      <div className="mt-4 flex justify-end">
-        <Button
-          size="sm"
-          onClick={handleExecute}
-          disabled={isExecuting}
-          data-testid={`button-execute-api-call-${apiCall.id}`}
-        >
-          <Play className={cn("h-4 w-4 mr-2", isExecuting && "animate-pulse")} />
-          {isExecuting ? "Executing..." : "Execute"}
-        </Button>
       </div>
     </Card>
   );
