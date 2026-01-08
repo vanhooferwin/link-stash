@@ -20,13 +20,10 @@ bookmarks:
     healthCheckEnabled: false
     order: 0
     id: ad857c46-d845-4ede-9ed9-63a1c21b728c
-    healthStatus: online
-    lastHealthCheck: '2026-01-07T17:32:44.521Z'
     color: blue
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: true
-    sslExpiryDays: 236
     gridRow: 0
     gridColumn: 0
   - name: OK-27
@@ -41,9 +38,6 @@ bookmarks:
       checkSsl: false
     order: 2
     id: ffcc5114-30a7-4d93-9f0b-af30ef40ec76
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:21.506Z'
-    sslExpiryDays: null
     gridRow: 0
     gridColumn: 1
   - name: JIRA
@@ -58,9 +52,6 @@ bookmarks:
       checkSsl: false
     order: 1
     id: c8a696c1-7253-44dd-b4eb-34d645988c08
-    healthStatus: online
-    lastHealthCheck: '2026-01-07T17:32:35.111Z'
-    sslExpiryDays: null
     gridRow: 0
     gridColumn: 2
   - name: SharePoint
@@ -72,9 +63,6 @@ bookmarks:
     healthCheckEnabled: false
     order: 2
     id: ae871d60-d137-465d-b5e6-9e6526dd6929
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T08:28:55.349Z'
-    sslExpiryDays: null
     gridRow: 0
     gridColumn: 3
     healthCheckConfig:
@@ -92,9 +80,6 @@ bookmarks:
       checkSsl: false
     order: 4
     id: e36bce13-16db-4644-afee-b41d6c6900f9
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:21.854Z'
-    sslExpiryDays: null
     gridRow: 0
     gridColumn: 2
   - name: OK-3
@@ -106,9 +91,6 @@ bookmarks:
     healthCheckEnabled: true
     order: 0
     id: 7f691ed8-626b-481f-a095-ffdf91967917
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:17.757Z'
-    sslExpiryDays: null
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
@@ -126,9 +108,6 @@ bookmarks:
       checkSsl: false
     order: 5
     id: 092ab251-7708-4ab7-8649-7ea348188b80
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:22.018Z'
-    sslExpiryDays: null
     gridRow: 1
     gridColumn: 2
   - name: OK-27
@@ -143,9 +122,6 @@ bookmarks:
       checkSsl: false
     order: 3
     id: 977039d6-0f5b-46af-a2d0-fa166ebc7c43
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:21.691Z'
-    sslExpiryDays: null
     gridRow: 1
     gridColumn: 1
   - name: Confluence
@@ -157,9 +133,6 @@ bookmarks:
     healthCheckEnabled: false
     order: 0
     id: 69d70a67-d0e5-42b7-94fa-c4039324c920
-    healthStatus: unknown
-    lastHealthCheck: null
-    sslExpiryDays: null
     gridRow: 0
     gridColumn: 1
   - name: OK-3
@@ -174,9 +147,6 @@ bookmarks:
       checkSsl: false
     order: 1
     id: 6b1ceac8-0b82-456f-8cbd-f4fcc05305e7
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:21.353Z'
-    sslExpiryDays: null
     gridRow: 1
     gridColumn: 0
   - name: Mpluz*
@@ -193,9 +163,6 @@ bookmarks:
     gridRow: 0
     gridColumn: 4
     id: 77d2ef54-9239-4b41-a56d-46f2925e3d4d
-    healthStatus: online
-    lastHealthCheck: '2026-01-08T09:53:20.815Z'
-    sslExpiryDays: null
   - name: Proxmox
     description: Virtualisatie platform
     url: https://10.10.30.199:8006
@@ -210,9 +177,6 @@ bookmarks:
     gridRow: 0
     gridColumn: 0
     id: 84d6bece-184a-4705-bdf6-2bc33dfa20c5
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:20.980Z'
-    sslExpiryDays: null
   - name: Switchboard
     description: Switch versions
     url: http://10.74.27.5:8800/
@@ -224,9 +188,6 @@ bookmarks:
     gridRow: 0
     gridColumn: 3
     id: 90edcc3d-4d2c-40d3-94d6-7386887978db
-    healthStatus: offline
-    lastHealthCheck: '2026-01-08T09:53:21.187Z'
-    sslExpiryDays: null
     healthCheckConfig:
       expectedStatus: 200
       checkSsl: false
@@ -253,5 +214,5 @@ users: []
 settings:
   backgroundBrightness: 95
   backgroundOpacity: 80
-  backgroundImageUrl: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=3544&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
   healthCheckInterval: 60
+  backgroundImageUrl: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=3544&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
