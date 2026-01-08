@@ -193,10 +193,18 @@ export async function registerRoutes(
       const config = bookmark.healthCheckConfig;
       const healthUrl = config?.url || bookmark.url;
       const expectedStatus = config?.expectedStatus || 200;
+      const allowSelfSigned = config?.allowSelfSigned || false;
+      
+      // Build headers for the request
+      const headers: Record<string, string> = {};
+      if (config?.basicAuthUsername && config?.basicAuthPassword) {
+        const credentials = Buffer.from(`${config.basicAuthUsername}:${config.basicAuthPassword}`).toString("base64");
+        headers["Authorization"] = `Basic ${credentials}`;
+      }
       
       try {
-        // Check SSL if enabled
-        if (config?.checkSsl) {
+        // Check SSL if enabled (skip expiry check for self-signed certs)
+        if (config?.checkSsl && !allowSelfSigned) {
           const urlObj = new URL(healthUrl);
           if (urlObj.protocol === "https:") {
             const https = await import("https");
@@ -238,10 +246,31 @@ export async function registerRoutes(
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
-        const response = await fetch(healthUrl, {
+        // For self-signed certs, we need to use a custom HTTPS agent
+        const fetchOptions: RequestInit & { dispatcher?: unknown } = {
           method: config?.jsonKey ? "GET" : "HEAD",
           signal: controller.signal,
-        });
+          headers: Object.keys(headers).length > 0 ? headers : undefined,
+        };
+        
+        // Use undici/node fetch with custom agent for self-signed certs
+        let response: Response;
+        if (allowSelfSigned && healthUrl.startsWith("https://")) {
+          const https = await import("https");
+          const { Agent } = await import("undici");
+          const agent = new Agent({
+            connect: {
+              rejectUnauthorized: false,
+            },
+          });
+          response = await fetch(healthUrl, {
+            ...fetchOptions,
+            // @ts-ignore - undici dispatcher
+            dispatcher: agent,
+          });
+        } else {
+          response = await fetch(healthUrl, fetchOptions);
+        }
         clearTimeout(timeoutId);
         
         if (response.status !== expectedStatus) {
