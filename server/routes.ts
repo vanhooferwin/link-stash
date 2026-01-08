@@ -195,11 +195,18 @@ export async function registerRoutes(
       const expectedStatus = config?.expectedStatus || 200;
       const allowSelfSigned = config?.allowSelfSigned || false;
       
+      console.log(`[Health Check] Starting health check for "${bookmark.name}" (${id})`);
+      console.log(`[Health Check] URL: ${healthUrl}`);
+      console.log(`[Health Check] Expected status: ${expectedStatus}`);
+      console.log(`[Health Check] Allow self-signed: ${allowSelfSigned}`);
+      console.log(`[Health Check] Config:`, JSON.stringify(config, null, 2));
+      
       // Build headers for the request
       const headers: Record<string, string> = {};
       if (config?.basicAuthUsername && config?.basicAuthPassword) {
         const credentials = Buffer.from(`${config.basicAuthUsername}:${config.basicAuthPassword}`).toString("base64");
         headers["Authorization"] = `Basic ${credentials}`;
+        console.log(`[Health Check] Using basic auth for user: ${config.basicAuthUsername}`);
       }
       
       try {
@@ -256,7 +263,7 @@ export async function registerRoutes(
         // Use undici/node fetch with custom agent for self-signed certs
         let response: Response;
         if (allowSelfSigned && healthUrl.startsWith("https://")) {
-          const https = await import("https");
+          console.log(`[Health Check] Using undici Agent with rejectUnauthorized: false`);
           const { Agent } = await import("undici");
           const agent = new Agent({
             connect: {
@@ -269,34 +276,47 @@ export async function registerRoutes(
             dispatcher: agent,
           });
         } else {
+          console.log(`[Health Check] Using standard fetch`);
           response = await fetch(healthUrl, fetchOptions);
         }
         clearTimeout(timeoutId);
         
+        console.log(`[Health Check] Response status: ${response.status}`);
+        console.log(`[Health Check] Response headers:`, Object.fromEntries(response.headers.entries()));
+        
         if (response.status !== expectedStatus) {
+          console.log(`[Health Check] Status mismatch: got ${response.status}, expected ${expectedStatus}`);
           status = "offline";
         } else if (config?.jsonKey) {
           try {
             const json = await response.json();
+            console.log(`[Health Check] JSON response:`, JSON.stringify(json, null, 2));
             const value = json[config.jsonKey];
             if (config.jsonValue) {
               status = String(value) === config.jsonValue ? "online" : "offline";
+              console.log(`[Health Check] JSON key "${config.jsonKey}" = "${value}", expected "${config.jsonValue}", status: ${status}`);
             } else {
               status = value !== undefined ? "online" : "offline";
+              console.log(`[Health Check] JSON key "${config.jsonKey}" exists: ${value !== undefined}, status: ${status}`);
             }
-          } catch {
+          } catch (jsonError) {
+            console.log(`[Health Check] Failed to parse JSON response:`, jsonError);
             status = "offline";
           }
         } else {
+          console.log(`[Health Check] Status matches, marking as online`);
           status = "online";
         }
-      } catch {
+      } catch (fetchError) {
+        console.log(`[Health Check] Fetch error:`, fetchError);
         status = "offline";
       }
 
+      console.log(`[Health Check] Final status for "${bookmark.name}": ${status}`);
       const updated = await storage.updateBookmarkHealth(id, status, sslExpiryDays);
       res.json(updated);
     } catch (error) {
+      console.log(`[Health Check] Unexpected error:`, error);
       res.status(500).json({ error: "Failed to check health" });
     }
   });
