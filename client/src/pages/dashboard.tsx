@@ -357,6 +357,30 @@ export default function Dashboard() {
     }
   }, [settings]);
 
+  // Apply background image to body for toast glass effect
+  useEffect(() => {
+    if (backgroundImageUrl) {
+      document.body.style.backgroundImage = `url(${backgroundImageUrl})`;
+      document.body.style.backgroundSize = 'cover';
+      document.body.style.backgroundPosition = 'center';
+      document.body.style.backgroundRepeat = 'no-repeat';
+      document.body.style.backgroundAttachment = 'fixed';
+    } else {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundAttachment = '';
+    }
+    return () => {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundAttachment = '';
+    };
+  }, [backgroundImageUrl]);
+
   // Function to refresh all health checks
   const refreshAllHealthChecks = async () => {
     const bookmarksWithHealth = bookmarks.filter(b => b.healthCheckEnabled);
