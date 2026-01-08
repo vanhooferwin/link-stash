@@ -123,151 +123,58 @@ function DraggableApiCallCard({
   );
 }
 
-interface BookmarkGridProps {
+interface UnifiedGridProps {
   bookmarks: BookmarkType[];
+  apiCalls: ApiCall[];
   columns: number;
   categoryId: string;
   editMode: boolean;
-  onEdit: (bookmark: BookmarkType) => void;
-  onDelete: (id: string) => void;
-  onDragStart: (e: React.DragEvent, bookmark: BookmarkType) => void;
+  onEditBookmark: (bookmark: BookmarkType) => void;
+  onDeleteBookmark: (id: string) => void;
+  onEditApiCall: (apiCall: ApiCall) => void;
+  onDeleteApiCall: (id: string) => void;
+  onExecuteApiCall: (apiCall: ApiCall) => void;
+  onBookmarkDragStart: (e: React.DragEvent, bookmark: BookmarkType) => void;
+  onApiCallDragStart: (e: React.DragEvent, apiCall: ApiCall) => void;
   onDragEnter: (categoryId: string, row: number, col: number) => void;
   onDragLeave: () => void;
   onDrop: (categoryId: string, row: number, col: number) => void;
   dropTarget: { row: number; col: number; categoryId: string } | null;
   animatingHealthId: string | null;
+  executingApiCallId: string | null;
   hasBackgroundImage: boolean;
 }
 
-function BookmarkGrid({
+function UnifiedGrid({
   bookmarks,
+  apiCalls,
   columns,
   categoryId,
   editMode,
-  onEdit,
-  onDelete,
-  onDragStart,
+  onEditBookmark,
+  onDeleteBookmark,
+  onEditApiCall,
+  onDeleteApiCall,
+  onExecuteApiCall,
+  onBookmarkDragStart,
+  onApiCallDragStart,
   onDragEnter,
   onDragLeave,
   onDrop,
   dropTarget,
   animatingHealthId,
+  executingApiCallId,
   hasBackgroundImage,
-}: BookmarkGridProps) {
-  const maxRow = Math.max(0, ...bookmarks.map(b => b.gridRow ?? 0));
+}: UnifiedGridProps) {
+  const bookmarkMaxRow = bookmarks.length > 0 ? Math.max(...bookmarks.map(b => b.gridRow ?? 0)) : -1;
+  const apiCallMaxRow = apiCalls.length > 0 ? Math.max(...apiCalls.map(a => a.gridRow ?? 0)) : -1;
+  const maxRow = Math.max(0, bookmarkMaxRow, apiCallMaxRow);
   const rows = editMode ? maxRow + 2 : maxRow + 1;
   
   const getBookmarkAt = (row: number, col: number) => {
     return bookmarks.find(b => (b.gridRow ?? 0) === row && (b.gridColumn ?? 0) === col);
   };
 
-  const isDropTarget = (row: number, col: number) => {
-    return dropTarget?.categoryId === categoryId && dropTarget.row === row && dropTarget.col === col;
-  };
-
-  return (
-    <div 
-      className="grid gap-4"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-    >
-      {Array.from({ length: rows }).flatMap((_, row) =>
-        Array.from({ length: columns }).map((_, col) => {
-          const bookmark = getBookmarkAt(row, col);
-          
-          if (bookmark) {
-            return (
-              <div
-                key={bookmark.id}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  onDrop(categoryId, row, col);
-                }}
-              >
-                <DraggableBookmarkCard
-                  bookmark={bookmark}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  editMode={editMode}
-                  isHealthAnimating={animatingHealthId === bookmark.id}
-                  hasBackgroundImage={hasBackgroundImage}
-                  onDragStart={onDragStart}
-                />
-              </div>
-            );
-          }
-          
-          if (!editMode) {
-            return (
-              <div
-                key={`empty-${row}-${col}`}
-                className="min-h-[80px] pointer-events-none"
-                aria-hidden="true"
-              />
-            );
-          }
-          
-          return (
-            <div
-              key={`empty-${row}-${col}`}
-              className={cn(
-                "border-2 border-dashed rounded-md transition-colors min-h-[80px]",
-                isDropTarget(row, col) ? "border-primary bg-primary/10" : "border-muted-foreground/20"
-              )}
-              onDragOver={(e) => {
-                e.preventDefault();
-                onDragEnter(categoryId, row, col);
-              }}
-              onDragLeave={onDragLeave}
-              onDrop={(e) => {
-                e.preventDefault();
-                onDrop(categoryId, row, col);
-              }}
-              data-testid={`grid-cell-bookmark-${row}-${col}`}
-            />
-          );
-        })
-      )}
-    </div>
-  );
-}
-
-interface ApiCallGridProps {
-  apiCalls: ApiCall[];
-  columns: number;
-  categoryId: string;
-  editMode: boolean;
-  onEdit: (apiCall: ApiCall) => void;
-  onDelete: (id: string) => void;
-  onExecute: (apiCall: ApiCall) => void;
-  onDragStart: (e: React.DragEvent, apiCall: ApiCall) => void;
-  onDragEnter: (categoryId: string, row: number, col: number) => void;
-  onDragLeave: () => void;
-  onDrop: (categoryId: string, row: number, col: number) => void;
-  dropTarget: { row: number; col: number; categoryId: string } | null;
-  executingApiCallId: string | null;
-  hasBackgroundImage: boolean;
-}
-
-function ApiCallGrid({
-  apiCalls,
-  columns,
-  categoryId,
-  editMode,
-  onEdit,
-  onDelete,
-  onExecute,
-  onDragStart,
-  onDragEnter,
-  onDragLeave,
-  onDrop,
-  dropTarget,
-  executingApiCallId,
-  hasBackgroundImage,
-}: ApiCallGridProps) {
-  const maxRow = Math.max(0, ...apiCalls.map(a => a.gridRow ?? 0));
-  const rows = editMode ? maxRow + 2 : maxRow + 1;
-  
   const getApiCallAt = (row: number, col: number) => {
     return apiCalls.find(a => (a.gridRow ?? 0) === row && (a.gridColumn ?? 0) === col);
   };
@@ -283,12 +190,36 @@ function ApiCallGrid({
     >
       {Array.from({ length: rows }).flatMap((_, row) =>
         Array.from({ length: columns }).map((_, col) => {
+          const bookmark = getBookmarkAt(row, col);
           const apiCall = getApiCallAt(row, col);
+          
+          if (bookmark) {
+            return (
+              <div
+                key={`bookmark-${bookmark.id}`}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  onDrop(categoryId, row, col);
+                }}
+              >
+                <DraggableBookmarkCard
+                  bookmark={bookmark}
+                  onEdit={onEditBookmark}
+                  onDelete={onDeleteBookmark}
+                  editMode={editMode}
+                  isHealthAnimating={animatingHealthId === bookmark.id}
+                  hasBackgroundImage={hasBackgroundImage}
+                  onDragStart={onBookmarkDragStart}
+                />
+              </div>
+            );
+          }
           
           if (apiCall) {
             return (
               <div
-                key={apiCall.id}
+                key={`apicall-${apiCall.id}`}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
@@ -297,13 +228,13 @@ function ApiCallGrid({
               >
                 <DraggableApiCallCard
                   apiCall={apiCall}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                  onExecute={onExecute}
+                  onEdit={onEditApiCall}
+                  onDelete={onDeleteApiCall}
+                  onExecute={onExecuteApiCall}
                   editMode={editMode}
                   isExecuting={executingApiCallId === apiCall.id}
                   hasBackgroundImage={hasBackgroundImage}
-                  onDragStart={onDragStart}
+                  onDragStart={onApiCallDragStart}
                 />
               </div>
             );
@@ -335,7 +266,7 @@ function ApiCallGrid({
                 e.preventDefault();
                 onDrop(categoryId, row, col);
               }}
-              data-testid={`grid-cell-api-${row}-${col}`}
+              data-testid={`grid-cell-${row}-${col}`}
             />
           );
         })
@@ -722,37 +653,36 @@ export default function Dashboard() {
   const handleDrop = useCallback((categoryId: string, row: number, col: number) => {
     if (!draggingItem) return;
     
+    // Check if cell is occupied by any bookmark (except the one being dragged if it's a bookmark)
+    const bookmarkOccupied = bookmarks.some(
+      b => b.categoryId === categoryId && 
+           (b.gridRow ?? 0) === row && 
+           (b.gridColumn ?? 0) === col && 
+           !(draggingItem.type === 'bookmark' && b.id === draggingItem.id)
+    );
+    
+    // Check if cell is occupied by any API call (except the one being dragged if it's an API call)
+    const apiCallOccupied = apiCalls.some(
+      a => a.categoryId === categoryId && 
+           (a.gridRow ?? 0) === row && 
+           (a.gridColumn ?? 0) === col && 
+           !(draggingItem.type === 'apiCall' && a.id === draggingItem.id)
+    );
+    
+    if (bookmarkOccupied || apiCallOccupied) {
+      toast({ title: "Cell is already occupied", variant: "destructive" });
+      setDraggingItem(null);
+      setDropTarget(null);
+      return;
+    }
+    
     if (draggingItem.type === 'bookmark') {
-      const isOccupied = bookmarks.some(
-        b => b.categoryId === categoryId && 
-             (b.gridRow ?? 0) === row && 
-             (b.gridColumn ?? 0) === col && 
-             b.id !== draggingItem.id
-      );
-      if (isOccupied) {
-        toast({ title: "Cell is already occupied", variant: "destructive" });
-        setDraggingItem(null);
-        setDropTarget(null);
-        return;
-      }
       updateBookmarkGridPositionMutation.mutate({
         id: draggingItem.id,
         gridRow: row,
         gridColumn: col,
       });
     } else {
-      const isOccupied = apiCalls.some(
-        a => a.categoryId === categoryId && 
-             (a.gridRow ?? 0) === row && 
-             (a.gridColumn ?? 0) === col && 
-             a.id !== draggingItem.id
-      );
-      if (isOccupied) {
-        toast({ title: "Cell is already occupied", variant: "destructive" });
-        setDraggingItem(null);
-        setDropTarget(null);
-        return;
-      }
       updateApiCallGridPositionMutation.mutate({
         id: draggingItem.id,
         gridRow: row,
@@ -879,8 +809,7 @@ export default function Dashboard() {
     if (editingBookmark) {
       updateBookmarkMutation.mutate({ id: editingBookmark.id, data: data as InsertBookmark });
     } else {
-      const categoryBookmarks = bookmarks.filter(b => b.categoryId === data.categoryId);
-      const nextPosition = findNextGridPosition(categoryBookmarks, data.categoryId);
+      const nextPosition = findNextGridPosition(data.categoryId);
       createBookmarkMutation.mutate({
         ...data,
         gridRow: nextPosition.row,
@@ -889,10 +818,19 @@ export default function Dashboard() {
     }
   };
 
-  const findNextGridPosition = (items: { gridRow?: number; gridColumn?: number }[], categoryId: string) => {
+  const findNextGridPosition = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     const columns = category?.columns ?? 4;
-    const occupied = new Set(items.map(item => `${item.gridRow ?? 0}-${item.gridColumn ?? 0}`));
+    
+    // Get all items in this category (both bookmarks and API calls)
+    const categoryBookmarks = bookmarks.filter(b => b.categoryId === categoryId);
+    const categoryApiCalls = apiCalls.filter(a => a.categoryId === categoryId);
+    
+    // Combine occupied positions from both types
+    const occupied = new Set([
+      ...categoryBookmarks.map(b => `${b.gridRow ?? 0}-${b.gridColumn ?? 0}`),
+      ...categoryApiCalls.map(a => `${a.gridRow ?? 0}-${a.gridColumn ?? 0}`)
+    ]);
     
     for (let row = 0; ; row++) {
       for (let col = 0; col < columns; col++) {
@@ -917,8 +855,7 @@ export default function Dashboard() {
     if (editingApiCall) {
       updateApiCallMutation.mutate({ id: editingApiCall.id, data: data as InsertApiCall });
     } else {
-      const categoryApiCalls = apiCalls.filter(a => a.categoryId === data.categoryId);
-      const nextPosition = findNextGridPosition(categoryApiCalls, data.categoryId);
+      const nextPosition = findNextGridPosition(data.categoryId);
       createApiCallMutation.mutate({
         ...data,
         gridRow: nextPosition.row,
@@ -1190,42 +1127,28 @@ export default function Dashboard() {
                         </Button>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="px-2 pt-4">
-                        <div className="space-y-4" onDragEnd={handleDragEnd}>
-                          {categoryBookmarks.length > 0 && (
-                            <BookmarkGrid
-                              bookmarks={categoryBookmarks}
-                              columns={category.columns ?? 4}
-                              categoryId={category.id}
-                              editMode={editMode}
-                              onEdit={handleEditBookmark}
-                              onDelete={(id) => deleteBookmarkMutation.mutate(id)}
-                              onDragStart={handleBookmarkDragStart}
-                              onDragEnter={handleDragEnter}
-                              onDragLeave={handleDragLeave}
-                              onDrop={handleDrop}
-                              dropTarget={dropTarget}
-                              animatingHealthId={animatingHealthId}
-                              hasBackgroundImage={!!backgroundImageUrl}
-                            />
-                          )}
-                          {categoryApiCalls.length > 0 && (
-                            <ApiCallGrid
-                              apiCalls={categoryApiCalls}
-                              columns={category.columns ?? 4}
-                              categoryId={category.id}
-                              editMode={editMode}
-                              onEdit={handleEditApiCall}
-                              onDelete={(id) => deleteApiCallMutation.mutate(id)}
-                              onExecute={(apiCall) => executeApiCallMutation.mutate(apiCall)}
-                              onDragStart={handleApiCallDragStart}
-                              onDragEnter={handleDragEnter}
-                              onDragLeave={handleDragLeave}
-                              onDrop={handleDrop}
-                              dropTarget={dropTarget}
-                              executingApiCallId={executingApiCallId}
-                              hasBackgroundImage={!!backgroundImageUrl}
-                            />
-                          )}
+                        <div onDragEnd={handleDragEnd}>
+                          <UnifiedGrid
+                            bookmarks={categoryBookmarks}
+                            apiCalls={categoryApiCalls}
+                            columns={category.columns ?? 4}
+                            categoryId={category.id}
+                            editMode={editMode}
+                            onEditBookmark={handleEditBookmark}
+                            onDeleteBookmark={(id: string) => deleteBookmarkMutation.mutate(id)}
+                            onEditApiCall={handleEditApiCall}
+                            onDeleteApiCall={(id: string) => deleteApiCallMutation.mutate(id)}
+                            onExecuteApiCall={(apiCall: ApiCall) => executeApiCallMutation.mutate(apiCall)}
+                            onBookmarkDragStart={handleBookmarkDragStart}
+                            onApiCallDragStart={handleApiCallDragStart}
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDrop={handleDrop}
+                            dropTarget={dropTarget}
+                            animatingHealthId={animatingHealthId}
+                            executingApiCallId={executingApiCallId}
+                            hasBackgroundImage={!!backgroundImageUrl}
+                          />
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
