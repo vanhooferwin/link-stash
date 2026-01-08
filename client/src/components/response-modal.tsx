@@ -95,37 +95,36 @@ export function ResponseModal({
             </div>
 
             <Tabs defaultValue="body" className="w-full">
-              <TabsList>
-                <TabsTrigger value="body" data-testid="tab-response-body">Body</TabsTrigger>
-                <TabsTrigger value="headers" data-testid="tab-response-headers">
-                  Headers ({Object.keys(response.headers).length})
-                </TabsTrigger>
-              </TabsList>
+              <div className="flex items-center justify-between gap-2">
+                <TabsList>
+                  <TabsTrigger value="body" data-testid="tab-response-body">Body</TabsTrigger>
+                  <TabsTrigger value="headers" data-testid="tab-response-headers">
+                    Headers ({Object.keys(response.headers).length})
+                  </TabsTrigger>
+                </TabsList>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => copyToClipboard(response.body)}
+                  data-testid="button-copy-response"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
 
               <TabsContent value="body" className="mt-4">
-                <div className="relative">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2 z-10"
-                    onClick={() => copyToClipboard(response.body)}
-                    data-testid="button-copy-response"
+                <ScrollArea className="h-[300px] rounded-lg border border-white/10 bg-black/20 backdrop-blur-sm">
+                  <pre
+                    className="p-4 text-sm font-mono whitespace-pre-wrap break-all"
+                    data-testid="text-response-body"
                   >
-                    {copied ? (
-                      <Check className="h-4 w-4 text-emerald-500" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <ScrollArea className="h-[300px] rounded-lg border border-white/10 bg-black/20 backdrop-blur-sm">
-                    <pre
-                      className="p-4 text-sm font-mono whitespace-pre-wrap break-all"
-                      data-testid="text-response-body"
-                    >
-                      {formatBody(response.body)}
-                    </pre>
-                  </ScrollArea>
-                </div>
+                    {formatBody(response.body)}
+                  </pre>
+                </ScrollArea>
               </TabsContent>
 
               <TabsContent value="headers" className="mt-4">
