@@ -222,4 +222,4 @@ export const insertUserSchema = z.object({
   password: z.string(),
 });
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type User = InsertUser & { id: number };
+export type User = InsertUser & { id: string };

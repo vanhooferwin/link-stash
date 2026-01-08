@@ -71,7 +71,7 @@ export class YamlStorage implements IStorage {
     this.bookmarks = new Map();
     this.apiCalls = new Map();
     this.users = new Map();
-    this.settings = { backgroundBrightness: 100, backgroundOpacity: 100 };
+    this.settings = { backgroundBrightness: 100, backgroundOpacity: 100, healthCheckInterval: 60 };
     this.loadFromFile();
   }
 
@@ -90,7 +90,13 @@ export class YamlStorage implements IStorage {
             data.categories.forEach(cat => this.categories.set(cat.id, cat));
           }
           if (data.bookmarks) {
-            data.bookmarks.forEach(bm => this.bookmarks.set(bm.id, bm));
+            data.bookmarks.forEach(bm => {
+              // Initialize runtime-only fields to defaults (not stored in YAML)
+              bm.healthStatus = "unknown";
+              bm.lastHealthCheck = null;
+              bm.sslExpiryDays = null;
+              this.bookmarks.set(bm.id, bm);
+            });
           }
           if (data.apiCalls) {
             data.apiCalls.forEach(ac => this.apiCalls.set(ac.id, ac));
@@ -135,9 +141,15 @@ export class YamlStorage implements IStorage {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
 
-      const data: YamlData = {
+      // Strip runtime-only fields from bookmarks before saving
+      const bookmarksForSave = Array.from(this.bookmarks.values()).map(bm => {
+        const { healthStatus, lastHealthCheck, sslExpiryDays, ...rest } = bm;
+        return rest;
+      });
+
+      const data = {
         categories: Array.from(this.categories.values()),
-        bookmarks: Array.from(this.bookmarks.values()),
+        bookmarks: bookmarksForSave,
         apiCalls: Array.from(this.apiCalls.values()),
         users: Array.from(this.users.values()),
         settings: this.settings,
@@ -351,9 +363,15 @@ export class YamlStorage implements IStorage {
   }
 
   async exportData(): Promise<string> {
+    // Strip runtime-only fields from bookmarks for export
+    const bookmarksForExport = Array.from(this.bookmarks.values()).map(bm => {
+      const { healthStatus, lastHealthCheck, sslExpiryDays, ...rest } = bm;
+      return rest;
+    });
+    
     const data = {
       categories: Array.from(this.categories.values()),
-      bookmarks: Array.from(this.bookmarks.values()),
+      bookmarks: bookmarksForExport,
       apiCalls: Array.from(this.apiCalls.values()),
       settings: this.settings,
     };
@@ -379,7 +397,13 @@ export class YamlStorage implements IStorage {
       data.categories.forEach(cat => this.categories.set(cat.id, cat));
     }
     if (data.bookmarks) {
-      data.bookmarks.forEach(bm => this.bookmarks.set(bm.id, bm));
+      data.bookmarks.forEach(bm => {
+        // Initialize runtime-only fields to defaults
+        bm.healthStatus = "unknown";
+        bm.lastHealthCheck = null;
+        bm.sslExpiryDays = null;
+        this.bookmarks.set(bm.id, bm);
+      });
     }
     if (data.apiCalls) {
       data.apiCalls.forEach(ac => this.apiCalls.set(ac.id, ac));
