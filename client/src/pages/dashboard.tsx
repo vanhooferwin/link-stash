@@ -1036,23 +1036,21 @@ export default function Dashboard() {
                   </div>
                 </div>
               )}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Label className="text-sm text-muted-foreground whitespace-nowrap">Health Check</Label>
-                <Slider
-                  value={[healthCheckInterval]}
-                  onValueChange={([value]) => updateSettingsMutation.mutate({ healthCheckInterval: value })}
-                  min={10}
-                  max={3600}
-                  step={10}
-                  className="w-32"
-                  data-testid="slider-health-interval"
+                <Input
+                  type="number"
+                  min={1}
+                  max={60}
+                  value={Math.round(healthCheckInterval / 60)}
+                  onChange={(e) => {
+                    const minutes = Math.max(1, Math.min(60, parseInt(e.target.value) || 1));
+                    updateSettingsMutation.mutate({ healthCheckInterval: minutes * 60 });
+                  }}
+                  className="w-16 h-8 text-center"
+                  data-testid="input-health-interval"
                 />
-                <span className="text-sm text-muted-foreground w-16 text-right">
-                  {healthCheckInterval >= 60 
-                    ? `${Math.floor(healthCheckInterval / 60)}m${healthCheckInterval % 60 ? ` ${healthCheckInterval % 60}s` : ''}`
-                    : `${healthCheckInterval}s`
-                  }
-                </span>
+                <span className="text-sm text-muted-foreground">min</span>
               </div>
             </div>
           )}
