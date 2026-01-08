@@ -262,22 +262,39 @@ export async function registerRoutes(
         
         // Use undici/node fetch with custom agent for self-signed certs
         let response: Response;
-        if (allowSelfSigned && healthUrl.startsWith("https://")) {
-          console.log(`[Health Check] Using undici Agent with rejectUnauthorized: false`);
-          const { Agent } = await import("undici");
-          const agent = new Agent({
-            connect: {
-              rejectUnauthorized: false,
-            },
-          });
-          response = await fetch(healthUrl, {
-            ...fetchOptions,
-            // @ts-ignore - undici dispatcher
-            dispatcher: agent,
-          });
+        const useGet = !!config?.jsonKey;
+        
+        const doFetch = async (method: string): Promise<Response> => {
+          const opts = { ...fetchOptions, method };
+          if (allowSelfSigned && healthUrl.startsWith("https://")) {
+            console.log(`[Health Check] Using undici Agent with rejectUnauthorized: false, method: ${method}`);
+            const { Agent } = await import("undici");
+            const agent = new Agent({
+              connect: {
+                rejectUnauthorized: false,
+              },
+            });
+            return fetch(healthUrl, {
+              ...opts,
+              // @ts-ignore - undici dispatcher
+              dispatcher: agent,
+            });
+          } else {
+            console.log(`[Health Check] Using standard fetch, method: ${method}`);
+            return fetch(healthUrl, opts);
+          }
+        };
+        
+        // Try HEAD first (unless we need the body), fall back to GET if not supported
+        if (!useGet) {
+          response = await doFetch("HEAD");
+          // If HEAD is not supported (405 or 501), retry with GET
+          if (response.status === 405 || response.status === 501) {
+            console.log(`[Health Check] HEAD not supported (${response.status}), retrying with GET`);
+            response = await doFetch("GET");
+          }
         } else {
-          console.log(`[Health Check] Using standard fetch`);
-          response = await fetch(healthUrl, fetchOptions);
+          response = await doFetch("GET");
         }
         clearTimeout(timeoutId);
         
