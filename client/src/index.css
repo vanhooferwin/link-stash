@@ -391,10 +391,10 @@
   border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Glass effect for toast notifications */
+/* Glass effect for toast notifications - matches sidebar styling */
 .glass-toast {
-  background-color: rgba(5, 5, 8, 0.5) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background-color: rgba(5, 5, 8, 0.25) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
 }
