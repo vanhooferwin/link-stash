@@ -54,7 +54,7 @@ export function ResponseModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] glass-card border-white/20">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] !bg-black/40 backdrop-blur-xl border-white/20">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 flex-wrap" data-testid="text-response-modal-title">
             {apiCall && (
