@@ -128,7 +128,7 @@ shared/
 ## Development
 
 ### Running the App
-The app runs with `npm run dev` which starts both the Express server and Vite dev server on port 5000.
+The app runs with `npm run dev` which starts both the Express server and Vite dev server on port 3005.
 
 ### Adding New Features
 1. Define schemas in `shared/schema.ts`

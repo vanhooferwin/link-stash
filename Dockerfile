@@ -14,7 +14,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV DATA_DIR=/app/data
-ENV PORT=5000
+ENV PORT=3005
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 appuser && \
@@ -28,9 +28,9 @@ RUN npm ci --only=production && npm cache clean --force
 
 USER appuser
 
-EXPOSE 5000
+EXPOSE 3005
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:5000/api/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3005/api/health || exit 1
 
 CMD ["node", "dist/index.cjs"]
