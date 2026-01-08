@@ -1,23 +1,21 @@
-version: '3.8'
-
 services:
-  bookmark-dashboard:
+  link-stash:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: bookmark-dashboard
+    container_name: link-stash
     ports:
-      - "${PORT:-5000}:5000"
+      - "${PORT:-3005}:3005"
     volumes:
       - bookmark-data:/app/data
     environment:
       - NODE_ENV=production
-      - PORT=5000
+      - PORT=3005
       - DATA_DIR=/app/data
       - SESSION_SECRET=${SESSION_SECRET:-changeme-in-production}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/api/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3005/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

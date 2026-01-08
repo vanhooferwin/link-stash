@@ -14,7 +14,7 @@ This guide explains how to deploy the Bookmark Dashboard application using Docke
 
 ```bash
 git clone <your-repository-url>
-cd bookmark-dashboard
+cd link-stash
 ```
 
 ### 2. Configure Environment
@@ -25,8 +25,8 @@ Create a `.env` file in the project root:
 # Required: Session secret for secure cookies (use a strong random string)
 SESSION_SECRET=your-secure-random-string-here
 
-# Optional: Change the exposed port (default: 5000)
-PORT=5000
+# Optional: Change the exposed port (default: 3005)
+PORT=3005
 ```
 
 Generate a secure session secret:
@@ -56,10 +56,10 @@ docker compose ps
 Check container health:
 
 ```bash
-docker compose logs bookmark-dashboard
+docker compose logs link-stash
 ```
 
-Access the application at: `http://localhost:5000` (or your configured port)
+Access the application at: `http://localhost:3005` (or your configured port)
 
 ## Configuration
 
@@ -68,7 +68,7 @@ Access the application at: `http://localhost:5000` (or your configured port)
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `SESSION_SECRET` | Yes | `changeme-in-production` | Secret key for session encryption |
-| `PORT` | No | `5000` | Port to expose the application |
+| `PORT` | No | `3005` | Port to expose the application |
 | `DATA_DIR` | No | `/app/data` | Directory for YAML data storage |
 
 ### Data Persistence
@@ -78,7 +78,7 @@ Bookmark data is stored in a Docker volume named `bookmark-data`. This ensures y
 View volume location:
 
 ```bash
-docker volume inspect bookmark-dashboard_bookmark-data
+docker volume inspect link-stash_bookmark-data
 ```
 
 ## Management Commands
@@ -87,10 +87,10 @@ docker volume inspect bookmark-dashboard_bookmark-data
 
 ```bash
 # Follow logs in real-time
-docker compose logs -f bookmark-dashboard
+docker compose logs -f link-stash
 
 # View last 100 lines
-docker compose logs --tail=100 bookmark-dashboard
+docker compose logs --tail=100 link-stash
 ```
 
 ### Stop the Application
@@ -124,7 +124,7 @@ docker compose up -d
 ```bash
 # Create a backup of the data volume
 docker run --rm \
-  -v bookmark-dashboard_bookmark-data:/data \
+  -v link-stash_bookmark-data:/data \
   -v $(pwd)/backups:/backup \
   alpine tar czf /backup/bookmark-data-$(date +%Y%m%d).tar.gz -C /data .
 ```
@@ -135,7 +135,7 @@ docker run --rm \
 # Restore from backup
 docker compose down
 docker run --rm \
-  -v bookmark-dashboard_bookmark-data:/data \
+  -v link-stash_bookmark-data:/data \
   -v $(pwd)/backups:/backup \
   alpine sh -c "rm -rf /data/* && tar xzf /backup/bookmark-data-YYYYMMDD.tar.gz -C /data"
 docker compose up -d
@@ -162,7 +162,7 @@ server {
     ssl_certificate_key /path/to/key.pem;
 
     location / {
-        proxy_pass http://localhost:5000;
+        proxy_pass http://localhost:3005;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -189,7 +189,7 @@ server {
 
 ```bash
 # Check logs for errors
-docker compose logs bookmark-dashboard
+docker compose logs link-stash
 
 # Verify the image built correctly
 docker compose build --no-cache
@@ -199,10 +199,10 @@ docker compose build --no-cache
 
 ```bash
 # Check if the app responds
-curl http://localhost:5000/api/health
+curl http://localhost:3005/api/health
 
 # View detailed health status
-docker inspect bookmark-dashboard | grep -A 10 Health
+docker inspect link-stash | grep -A 10 Health
 ```
 
 ### Data Not Persisting
@@ -237,11 +237,11 @@ docker compose up -d
 │              Docker Host                │
 │                                         │
 │  ┌───────────────────────────────────┐  │
-│  │     bookmark-dashboard container  │  │
+│  │     link-stash container  │  │
 │  │                                   │  │
 │  │  ┌─────────────────────────────┐  │  │
 │  │  │   Node.js Express Server    │  │  │
-│  │  │   (Port 5000)               │  │  │
+│  │  │   (Port 3005)               │  │  │
 │  │  │                             │  │  │
 │  │  │  - Serves React frontend    │  │  │
 │  │  │  - REST API endpoints       │  │  │
@@ -291,21 +291,21 @@ export CR_PAT=your-personal-access-token
 echo $CR_PAT | docker login ghcr.io -u $GITHUB_USER --password-stdin
 
 # Build the image with GHCR tag
-docker build -t ghcr.io/$GITHUB_USER/bookmark-dashboard:latest \
-  --label org.opencontainers.image.source=https://github.com/$GITHUB_USER/bookmark-dashboard .
+docker build -t ghcr.io/$GITHUB_USER/link-stash:latest \
+  --label org.opencontainers.image.source=https://github.com/$GITHUB_USER/link-stash .
 
 # Push to GHCR
-docker push ghcr.io/$GITHUB_USER/bookmark-dashboard:latest
+docker push ghcr.io/$GITHUB_USER/link-stash:latest
 
 # Optionally tag with version
-docker tag ghcr.io/$GITHUB_USER/bookmark-dashboard:latest ghcr.io/$GITHUB_USER/bookmark-dashboard:v1.0.0
-docker push ghcr.io/$GITHUB_USER/bookmark-dashboard:v1.0.0
+docker tag ghcr.io/$GITHUB_USER/link-stash:latest ghcr.io/$GITHUB_USER/link-stash:v1.0.0
+docker push ghcr.io/$GITHUB_USER/link-stash:v1.0.0
 ```
 
 #### 3. Make the Package Public (Optional)
 
 1. Go to your GitHub profile → **Packages**
-2. Click on `bookmark-dashboard`
+2. Click on `link-stash`
 3. Go to **Package settings**
 4. Under **Danger Zone**, click **Change visibility** and select **Public**
 
@@ -395,8 +395,8 @@ Replace the `build` section with an `image` reference:
 
 ```yaml
 services:
-  bookmark-dashboard:
-    image: ghcr.io/your-username/bookmark-dashboard:latest
+  link-stash:
+    image: ghcr.io/your-username/link-stash:latest
     # Remove the build section
     # build:
     #   context: .
@@ -434,10 +434,10 @@ The GitHub Actions workflow creates these tags automatically:
 
 | Event | Tag Example |
 |-------|-------------|
-| Push to main | `ghcr.io/user/bookmark-dashboard:main` |
-| Git tag v1.2.3 | `ghcr.io/user/bookmark-dashboard:1.2.3` |
-| Git tag v1.2.3 | `ghcr.io/user/bookmark-dashboard:1.2` |
-| Any commit | `ghcr.io/user/bookmark-dashboard:sha-abc1234` |
+| Push to main | `ghcr.io/user/link-stash:main` |
+| Git tag v1.2.3 | `ghcr.io/user/link-stash:1.2.3` |
+| Git tag v1.2.3 | `ghcr.io/user/link-stash:1.2` |
+| Any commit | `ghcr.io/user/link-stash:sha-abc1234` |
 
 ## Support
 

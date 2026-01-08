@@ -555,7 +555,7 @@ export async function registerRoutes(
 
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const timeoutId = setTimeout(() => controller.abort(), 3005);
       
       const response = await fetch(url, {
         method: "HEAD",
