@@ -100,7 +100,7 @@ Save and execute API calls directly from your dashboard:
 ```yaml
 services:
   link-stash:
-    image: ghcr.io/yourusername/link-stash:latest
+    image: ghcr.io/vanhooferwin/link-stash:latest
     ports:
       - "3005:3005"
     volumes:
